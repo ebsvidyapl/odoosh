@@ -2,8 +2,9 @@
     'name': 'Employee Management',
     'version': '1.0',
     'summary': 'Simple Employee Management Module',
-    'author': 'Your Name',
+    'author': 'Vidhya',
     'category': 'Human Resources',
+    'license': 'LGPL-3',
     'depends': ['base','sale', 'hr', 'purchase'],
     'data': [
         'security/ir.model.access.csv',
