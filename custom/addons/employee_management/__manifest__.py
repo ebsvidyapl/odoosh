@@ -1,0 +1,20 @@
+{
+    'name': 'Employee Management',
+    'version': '1.0',
+    'summary': 'Simple Employee Management Module',
+    'author': 'Your Name',
+    'category': 'Human Resources',
+    'depends': ['base','sale', 'hr', 'purchase'],
+    'data': [
+        'security/ir.model.access.csv',
+        'data/employee_sequence.xml',
+        'reports/employee_report.xml',
+        'reports/employee_report_template.xml',
+        'views/employee_views.xml',
+        'views/sale_order_views.xml',      
+        'views/purchase_order_views.xml',
+
+    ],
+    'installable': True,
+    'application': True,
+}
