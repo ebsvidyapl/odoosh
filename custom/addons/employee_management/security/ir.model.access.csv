@@ -1,2 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_employee_management,access_employee_management,model_employee_management,,1,1,1,1
+access_management,management,model_employee_management,employee_management.group_management,1,1,1,1
+access_sales,sales,model_employee_management,employee_management.group_sales_team,1,1,1,0
+access_accounting,accounting,model_employee_management,employee_management.group_account_logistic,1,0,0,0
