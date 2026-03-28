@@ -1,7 +1,5 @@
 <odoo>
 
-   <odoo>
-
     <!-- Management -->
     <record id="group_management" model="res.groups">
         <field name="name">Management</field>
@@ -17,30 +15,21 @@
         <field name="name">Accounting &amp; Logistic</field>
     </record>
 
+    <!-- Readonly rule for Sales -->
     <record id="rule_account_logistic_readonly_sales" model="ir.rule">
-    <field name="name">Accounting Readonly Sales</field>
-    <field name="model_id" ref="sale.model_sale_order"/>
-    <field name="groups" eval="[(4, ref('employee_management.group_account_logistic'))]"/>
-    <field name="domain_force">[(1,'=',1)]</field>
-    <field name="perm_read" eval="1"/>
-    <field name="perm_write" eval="0"/>
-    <field name="perm_create" eval="0"/>
-    <field name="perm_unlink" eval="0"/>
+        <field name="name">Accounting Readonly Sales</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="groups" eval="[(4, ref('employee_management.group_account_logistic'))]"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
     </record>
-    <record id="rule_account_logistic_readonly_sales" model="ir.rule">
-    <field name="name">Accounting Readonly Sales</field>
-    <field name="model_id" ref="sale.model_sale_order"/>
-    <field name="groups" eval="[(4, ref('employee_management.group_account_logistic'))]"/>
-    <field name="domain_force">[(1,'=',1)]</field>
-    <field name="perm_read" eval="1"/>
-    <field name="perm_write" eval="0"/>
-    <field name="perm_create" eval="0"/>
-    <field name="perm_unlink" eval="0"/>
-    </record>
-    <menuitem id="menu_config"
-          name="Configuration"
-          groups="employee_management.group_management"/>
-    <menuitem id="menu_config"
-          name="Configuration"
-          groups="employee_management.group_management"/>
+
+    <!-- Configuration menu (only Management) -->
+    <menuitem id="menu_config_management"
+              name="Configuration"
+              groups="employee_management.group_management"/>
+
 </odoo>
