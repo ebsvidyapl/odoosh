@@ -1,0 +1,39 @@
+<odoo>
+
+    <record id="view_partner_form_inherit_approval" model="ir.ui.view">
+        <field name="name">res.partner.form.approval</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add buttons in header -->
+            <xpath expr="//header" position="inside">
+
+                <!-- Submit Button -->
+                <button name="action_submit"
+                        string="Submit"
+                        type="object"
+                        states="draft"
+                        class="btn-primary"/>
+
+                <!-- Approve Button (Only Management) -->
+                <button name="action_approve"
+                        string="Approve"
+                        type="object"
+                        states="pending"
+                        groups="employee_management.group_management"
+                        class="btn-success"/>
+
+            </xpath>
+
+            <!-- Add approval state field -->
+            <xpath expr="//sheet" position="inside">
+                <group>
+                    <field name="approval_state" readonly="1"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

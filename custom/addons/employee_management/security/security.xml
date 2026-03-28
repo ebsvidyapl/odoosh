@@ -1,0 +1,46 @@
+<odoo>
+
+    <!-- 1. Management Group -->
+    <record id="group_management" model="res.groups">
+        <field name="name">Management</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <!-- 2. Sales Team -->
+    <record id="group_sales_team" model="res.groups">
+        <field name="name">Sales Team</field>
+        <field name="category_id" ref="base.module_category_sales_management"/>
+    </record>
+
+    <!-- 3. Accounting & Logistic -->
+    <record id="group_account_logistic" model="res.groups">
+        <field name="name">Accounting & Logistic</field>
+        <field name="category_id" ref="base.module_category_accounting_finance"/>
+    </record>
+    <record id="rule_account_logistic_readonly_sales" model="ir.rule">
+    <field name="name">Accounting Readonly Sales</field>
+    <field name="model_id" ref="sale.model_sale_order"/>
+    <field name="groups" eval="[(4, ref('employee_management.group_account_logistic'))]"/>
+    <field name="domain_force">[(1,'=',1)]</field>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+    </record>
+    <record id="rule_account_logistic_readonly_sales" model="ir.rule">
+    <field name="name">Accounting Readonly Sales</field>
+    <field name="model_id" ref="sale.model_sale_order"/>
+    <field name="groups" eval="[(4, ref('employee_management.group_account_logistic'))]"/>
+    <field name="domain_force">[(1,'=',1)]</field>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+    </record>
+    <menuitem id="menu_config"
+          name="Configuration"
+          groups="employee_management.group_management"/>
+    <menuitem id="menu_config"
+          name="Configuration"
+          groups="employee_management.group_management"/>
+</odoo>
