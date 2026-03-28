@@ -14,7 +14,7 @@
 
     <!-- 3. Accounting & Logistic -->
     <record id="group_account_logistic" model="res.groups">
-        <field name="name">Accounting & Logistic</field>
+        <field name="name">Accounting &amp; Logistic</field>
         <field name="category_id" ref="base.module_category_accounting_finance"/>
     </record>
     <record id="rule_account_logistic_readonly_sales" model="ir.rule">
