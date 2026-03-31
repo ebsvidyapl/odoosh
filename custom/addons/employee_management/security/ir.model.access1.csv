@@ -2,4 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_employee_management,access_employee_management,model_employee_management,,1,1,1,1
 access_management_all,management_all,base.model_res_partner,employee_management.group_management,1,1,1,1
 access_sales_team,sales_team,base.model_res_partner,employee_management.group_sales_team,1,1,1,0
-access_account_logistics,account_logistics,base.model_res_partner,employee_management.group_account_logistics,1,0,0,0
+access_account_logistics,,base.model_res_partner,employee_management.group_account_logistics,1,0,0,0
