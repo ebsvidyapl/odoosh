@@ -19,13 +19,13 @@ class ResPartner(models.Model):
         self.write({'approval_state': 'approved'})
 
     @api.model
-    def create(self, vals):
-        user = self.env.user
-        if user.has_group('employee_management.group_sales_team'):
-            vals['approval_state'] = 'pending'
-        else:
-            vals['approval_state'] = 'approved'
-        return super().create(vals)
+    def create(self, vals_list):   # ✅ FIXED
+        for vals in vals_list:
+            if self.env.user.has_group('employee_management.group_sales_team'):
+                vals['approval_state'] = 'pending'
+            else:
+                vals['approval_state'] = 'approved'
+        return super().create(vals_list)
 
     def write(self, vals):
         if self.env.user.has_group('employee_management.group_sales_team'):
