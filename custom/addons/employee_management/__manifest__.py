@@ -4,6 +4,7 @@
     'summary': 'Simple Employee Management Module',
     'author': 'Vidhya',
     'category': 'Human Resources',
+    'license': 'LGPL-3',
     'depends': ['base','sale', 'hr', 'purchase'],
     'data': [
         'security/security.xml',        
