@@ -1,6 +1,6 @@
 {
     'name': 'Employee Management',
-    'version': '1.0',
+    'version': '19.0.1',
     'summary': 'Simple Employee Management Module',
     'author': 'Vidhya',
     'category': 'Human Resources',
@@ -9,7 +9,7 @@
         'security/security.xml',        
         'security/ir.model.access.csv', 
         'security/record_rules.xml',
-        
+
         'data/employee_sequence.xml',
 
         'reports/employee_report.xml',
