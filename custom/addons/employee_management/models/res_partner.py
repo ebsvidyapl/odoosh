@@ -28,7 +28,8 @@ class ResPartner(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        if self.env.user.has_group('employee_management.group_sales_team'):
-            if 'approval_state' not in vals:
-                raise UserError("Sales team cannot edit without approval")
-        return super().write(vals)
+        for rec in self:
+            if self.env.user.has_group('employee_management.group_sales_team'):
+                if rec.approval_state == 'approved' and 'approval_state' not in vals:
+                 raise UserError("Sales team cannot edit approved records")
+                 return super().write(vals)
