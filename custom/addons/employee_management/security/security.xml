@@ -1,0 +1,21 @@
+<odoo>
+
+    <!-- Management Group -->
+    <record id="group_management" model="res.groups">
+        <field name="name">Management</field>
+        <field name="category_id" ref="base.module_category_user_type"/>
+    </record>
+
+    <!-- Sales Team -->
+    <record id="group_sales_team" model="res.groups">
+        <field name="name">Sales Team</field>
+        <field name="category_id" ref="base.module_category_sales_management"/>
+    </record>
+
+    <!-- Accounting & Logistics -->
+    <record id="group_account_logistics" model="res.groups">
+        <field name="name">Accounting &amp; Logistics</field>
+        <field name="category_id" ref="base.module_category_accounting"/>
+    </record>
+
+</odoo>
