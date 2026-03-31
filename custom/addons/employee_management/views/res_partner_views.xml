@@ -1,4 +1,4 @@
-<odoo>
+<odooooooooo>
  <!-- updated -->
     <record id="view_partner_form_inherit_approval" model="ir.ui.view">
         <field name="name">res.partner.form.approval</field>
