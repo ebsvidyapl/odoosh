@@ -1,6 +1,6 @@
 {
     'name': 'Employee Management',
-    'version': '1.0.1',
+    'version': '1.0.2',
     'summary': 'Simple Employee Management Module',
     'author': 'Vidhya',
     'category': 'Human Resources',
