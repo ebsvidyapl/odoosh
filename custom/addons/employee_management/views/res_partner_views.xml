@@ -1,29 +1,35 @@
 <odoo>
+    <data>
 
-    <record id="view_partner_form_inherit" model="ir.ui.view">
-        <field name="name">res.partner.form.approval</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
+        <record id="view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.approval</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
 
-            <xpath expr="//header" position="inside">
-                <button name="action_submit_for_approval"
-                        string="Submit for Approval"
-                        type="object"
-                        states="draft"/>
+                <!-- Add buttons inside form -->
+                <xpath expr="//form" position="inside">
+                    <header>
 
-                <button name="action_approve"
-                        string="Approve"
-                        type="object"
-                        groups="employee_management.group_management"
-                        states="pending"/>
-            </xpath>
+                        <button name="action_submit_for_approval"
+                                string="Submit for Approval"
+                                type="object"/>
 
-            <xpath expr="//sheet" position="inside">
-                <field name="approval_state" readonly="1"/>
-            </xpath>
+                        <button name="action_approve"
+                                string="Approve"
+                                type="object"
+                                groups="employee_management.group_management"/>
 
-        </field>
-    </record>
+                    </header>
+                </xpath>
 
+                <!-- Add approval field -->
+                <xpath expr="//sheet" position="inside">
+                    <field name="approval_state" readonly="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
 </odoo>
