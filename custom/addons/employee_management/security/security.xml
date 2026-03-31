@@ -4,19 +4,19 @@
         <!-- Management -->
         <record id="group_management" model="res.groups">
             <field name="name">Management</field>
-            <field name="category_id" ref="base.module_category_administration"/>
+            <field name="category_ids" eval="[(4, ref('base.module_category_administration'))]"/>
         </record>
 
         <!-- Sales Team -->
         <record id="group_sales_team" model="res.groups">
             <field name="name">Sales Team</field>
-            <field name="category_id" ref="sales_team.module_category_sales"/>
+            <field name="category_ids" eval="[(4, ref('base.module_category_administration'))]"/>
         </record>
 
         <!-- Accounting & Logistics -->
         <record id="group_account_logistics" model="res.groups">
             <field name="name">Accounting &amp; Logistics</field>
-            <field name="category_id" ref="account.module_category_accounting"/>
+            <field name="category_ids" eval="[(4, ref('base.module_category_administration'))]"/>
         </record>
 
     </data>
