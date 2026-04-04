@@ -10,19 +10,19 @@
 <record id="rule_hide_vendors_accountant" model="ir.rule">
     <field name="name">Hide Vendors</field>
     <field name="model_id" ref="base.model_res_partner"/>
-    <field name="groups" eval="[(4, ref('employee_management.group_accountant'))]"/>
+    <field name="groups" eval="[(4, ref('employee_management.group_accountant_restricted'))]"/>
     <field name="domain_force">[('supplier_rank', '=', 0)]</field>
 </record>
 <record id="rule_hide_products_accountant" model="ir.rule">
     <field name="name">Hide Products</field>
     <field name="model_id" ref="product.model_product_template"/>
-    <field name="groups" eval="[(4, ref('employee_management.group_accountant'))]"/>
+    <field name="groups" eval="[(4, ref('employee_management.group_accountant_restricted'))]"/>
     <field name="domain_force">[(0,'=',1)]</field>
 </record>
 <record id="hide_account_reports_menu" model="ir.ui.menu">
-    <field name="groups_id" eval="[(3, ref('employee_management.group_accountant'))]"/>
+    <field name="groups_id" eval="[(3, ref('employee_management.group_accountant_restricted'))]"/>
 </record>
 <record id="account.menu_finance_reports" model="ir.ui.menu">
-    <field name="groups_id" eval="[(6,0,[ref('account.group_account')])]"/>
+    <field name="groups_id" eval="[(6,0,[ref('account.group_account_manager')])]"/>
 </record>
 </odoo>

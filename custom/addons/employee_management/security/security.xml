@@ -17,7 +17,7 @@
         </record>
 
  <!-- Accountant -->
-        <record id="group_account" model="res.groups">
+        <record id="group_accountant_restricted" model="res.groups">
             <field name="name">Accountant</field>
         </record>
     </data>
