@@ -24,9 +24,4 @@
         <field name="domain_force">[(0,'=',1)]</field>
     </record>
 
-    <!-- Restrict Reports ONLY to Managers -->
-    <record id="account.menu_finance_reports" model="ir.ui.menu">
-        <field name="groups" eval="[(6,0,[ref('account.group_account_manager')])]"/>
-    </record>
-
-</odoo>
+   </odoo>
