@@ -23,5 +23,8 @@
         <field name="groups" eval="[(4, ref('employee_management.group_accountant_restricted'))]"/>
         <field name="domain_force">[(0,'=',1)]</field>
     </record>
-
+<menuitem id="crm_menu_config"
+          name="Configuration"
+          parent="crm.crm_menu_root"
+          groups="employee_management.group_management"/>
    </odoo>
