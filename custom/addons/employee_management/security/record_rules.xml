@@ -20,9 +20,9 @@
     <field name="domain_force">[(0,'=',1)]</field>
 </record>
 <record id="hide_account_reports_menu" model="ir.ui.menu">
-    <field name="groups_id" eval="[(3, ref('employee_management.group_accountant_restricted'))]"/>
+    <field name="groups" eval="[(3, ref('employee_management.group_accountant_restricted'))]"/>
 </record>
 <record id="account.menu_finance_reports" model="ir.ui.menu">
-    <field name="groups_id" eval="[(6,0,[ref('account.group_account_manager')])]"/>
+    <field name="groups" eval="[(6,0,[ref('account.group_account_manager')])]"/>
 </record>
 </odoo>
