@@ -2,7 +2,7 @@
     <data>
 
         <!-- Restrict CRM Sales menu to Management only -->
-        <menuitem id="crm.crm_team_menu"
+        <menuitem id="crm.sales_team_menu_team_pipeline"
                   groups="employee_management.group_management"/>
 
     </data>
