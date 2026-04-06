@@ -16,5 +16,13 @@
     <record id="group_accountant" model="res.groups">
         <field name="name">Accountant</field>
     </record>
+    <odoo>
+
+    <!-- Remove CRM menu access for Accountant group -->
+    <record id="hide_crm_menu_for_accountant" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('your_module.group_accountant'))]"/>
+    </record>
+
+</odoo>
     </data>
 </odoo>
