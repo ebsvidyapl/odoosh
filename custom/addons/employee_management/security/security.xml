@@ -1,7 +1,7 @@
 <odoo>
     <data>
 
-    <record id="group_management" model="res.groups">
+          <record id="group_management" model="res.groups">
         <field name="name">Management</field>
     </record>
 
@@ -16,6 +16,5 @@
     <record id="group_accountant" model="res.groups">
         <field name="name">Accountant</field>
     </record>
-
     </data>
 </odoo>
