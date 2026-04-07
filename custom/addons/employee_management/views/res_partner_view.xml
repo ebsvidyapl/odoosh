@@ -1,0 +1,33 @@
+<odoo>
+    <data>
+    <record id="view_partner_form_inherit_approval" model="ir.ui.view">
+    <field name="name">res.partner.form.approval</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//sheet" position="inside">
+            <field name="approval_state" readonly="1"/>
+        </xpath>
+
+        <xpath expr="//header" position="inside">
+            <button name="action_approve"
+                    type="object"
+                    string="Approve"
+                    class="btn-primary"
+                    groups="employee_management.group_management"
+                    attrs="{'invisible': [('approval_state','=','approved')]}"/>
+        </xpath>
+
+    </field>
+</record>
+<record id="partner_rule_non_management" model="ir.rule">
+    <field name="name">Hide Unapproved Partners</field>
+    <field name="model_id" ref="base.model_res_partner"/>
+    <field name="groups" eval="[(4, ref('employee_management.group_sales_officer')),
+                                (4, ref('employee_management.group_logistics')),
+                                (4, ref('employee_management.group_accountant'))]"/>
+    <field name="domain_force">[('approval_state','=','approved')]</field>
+</record>
+   </data>
+</odoo>

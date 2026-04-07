@@ -1,12 +1,11 @@
 from odoo import models, fields, api
 from odoo.exceptions import AccessError
 
-def unlink(self):
-    if not self.env.user.has_group('employee_management.group_management'):
-        raise AccessError("Only Management can delete employee records.")
-    return super(Employee, self).unlink()
-
 class Employee(models.Model):
+    def unlink(self):
+        if not self.env.user.has_group('employee_management.group_management'):
+         raise AccessError("Only Management can delete any records.")
+        return super(Employee, self).unlink()
     _name = 'employee.management'
     _description = 'Employee Management'
     employee_code = fields.Char(
