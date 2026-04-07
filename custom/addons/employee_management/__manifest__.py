@@ -16,7 +16,6 @@
         'reports/employee_report.xml',
         'reports/employee_report_template.xml',
          
-        
         'views/employee_views.xml',
         'views/sale_order_views.xml',      
         'views/purchase_order_views.xml',
