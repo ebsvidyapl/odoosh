@@ -7,8 +7,7 @@
     'license': 'LGPL-3',
     'depends': ['base','sale', 'hr', 'purchase' , 'crm'],
     'data': [
-        'security/security.xml',  
-        'security/partner_rule.xml',       
+        'security/security.xml',       
         'security/ir.model.access.csv',
 
         'data/employee_sequence.xml',
@@ -20,6 +19,8 @@
         'views/sale_order_views.xml',      
         'views/purchase_order_views.xml',
         'views/res_partner_view.xml',
+                 
+        'security/partner_rule.xml', 
 
     ],
     'installable': True,
