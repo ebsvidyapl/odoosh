@@ -19,9 +19,7 @@ class SaleOrder(models.Model):
                 if product.type != 'product':
                     continue
 
-                qty_available = product.with_context(
-    warehouse=order.warehouse_id.id
-).free_qty
+                qty_available = product.free_qty
                 required_qty = line.product_uom_qty
 
                 if qty_available < required_qty:
