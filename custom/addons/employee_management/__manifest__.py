@@ -5,7 +5,7 @@
     'author': 'Vidhya',
     'category': 'Human Resources',
     'license': 'LGPL-3',
-    'depends': ['base','sale', 'hr', 'purchase' , 'crm'],
+    'depends': ['base','sale', 'hr', 'purchase' , 'crm','sale_management', 'stock'],
     'data': [
         'security/security.xml',        
         'security/ir.model.access.csv',
