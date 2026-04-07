@@ -16,13 +16,21 @@ class SaleOrder(models.Model):
                 product = line.product_id
 
                 # Skip services
-                if product.type != 'product':
-                    continue
+                if product.type not in ['product', 'consu']:
+                  continue
 
-                qty_available = product.free_qty
+                qty_available = product.with_context(
+    warehouse=order.warehouse_id.id
+).free_qty
+
+                raise UserError(
+    f"{product.name}\n"
+    f"Required: {line.product_uom_qty}\n"
+    f"Free Qty: {qty_available}"
+)
                 required_qty = line.product_uom_qty
 
-                if qty_available < required_qty:
+                if qty_available <= required_qty:
 
                     supplier = product.seller_ids[:1]
                     if not supplier:
