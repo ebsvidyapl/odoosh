@@ -5,22 +5,20 @@
     'author': 'Vidhya',
     'category': 'Human Resources',
     'license': 'LGPL-3',
-    'depends': ['base', 'contacts' , 'sale', 'hr', 'purchase' , 'crm'],
+    'depends': ['base','sale', 'hr', 'purchase' , 'crm'],
     'data': [
-        'security/security.xml',       
+        'security/security.xml',        
         'security/ir.model.access.csv',
 
         'data/employee_sequence.xml',
 
         'reports/employee_report.xml',
         'reports/employee_report_template.xml',
-         
+        
+        
         'views/employee_views.xml',
         'views/sale_order_views.xml',      
         'views/purchase_order_views.xml',
-
-        #'views/res_partner_view.xml',
-
 
     ],
     'installable': True,
