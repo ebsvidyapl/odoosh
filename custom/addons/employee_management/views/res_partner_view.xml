@@ -8,16 +8,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//sheet" position="inside">
-
-                    <field name="approval_state" readonly="1"/>
-
-                    <button name="action_approve"
-                            type="object"
-                            string="Approve"
-                            class="btn-primary"
-                            groups="employee_management.group_management"
-                            invisible="approval_state == 'approved'"/>
-
+                    <field name="approval_state"/>
                 </xpath>
 
             </field>

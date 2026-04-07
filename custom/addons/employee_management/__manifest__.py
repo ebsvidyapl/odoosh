@@ -19,8 +19,8 @@
         'views/sale_order_views.xml',      
         'views/purchase_order_views.xml',
         'views/res_partner_view.xml',
-                 
-        'security/partner_rule.xml', 
+
+        #'security/partner_rule.xml', 
 
     ],
     'installable': True,
