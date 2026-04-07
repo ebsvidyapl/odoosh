@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
                 if not supplier:
                     raise UserError(f"No vendor for {product.name}")
 
-                vendor = supplier.name
+                vendor = supplier.partner_id
 
                 po_lines.append((0, 0, {
                     'product_id': product.id,
