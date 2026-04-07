@@ -10,58 +10,54 @@ class SaleOrder(models.Model):
         for order in self:
 
             po_lines = []
-            vendor = False
+        vendor = False
 
-            for line in order.order_line:
-                product = line.product_id
+        for line in order.order_line:
+            product = line.product_id
 
-                # Skip services
-                if product.type not in ['product', 'consu']:
-                  continue
+            if product.type not in ['product', 'consu']:
+                continue
 
-                qty_available = product.with_context(
-    warehouse=order.warehouse_id.id
-).free_qty
+            required_qty = line.product_uom_qty
 
-                raise UserError(
-    f"{product.name}\n"
-    f"Required: {line.product_uom_qty}\n"
-    f"Free Qty: {qty_available}"
-)
-                required_qty = line.product_uom_qty
+            if required_qty <= 0:
+                continue
 
-                if qty_available <= required_qty:
+            qty_available = product.with_context(
+                warehouse=order.warehouse_id.id
+            ).free_qty
 
-                    supplier = product.seller_ids[:1]
-                    if not supplier:
-                        raise UserError(f"No vendor defined for {product.name}")
+            if qty_available <= required_qty:
 
-                    vendor = supplier.name
+                supplier = product.seller_ids[:1]
+                if not supplier:
+                    raise UserError(f"No vendor for {product.name}")
 
-                    po_lines.append((0, 0, {
-                        'product_id': product.id,
-                        'name': product.name,
-                        'product_qty': required_qty - qty_available,
-                        'price_unit': supplier.price or product.standard_price,
-                        'date_planned': fields.Datetime.now(),
-                    }))
+                vendor = supplier.name
 
-            if not po_lines:
-                raise UserError("All products are in stock.")
+                po_lines.append((0, 0, {
+                    'product_id': product.id,
+                    'name': product.name,
+                    'product_qty': required_qty - qty_available,
+                    'price_unit': supplier.price or product.standard_price,
+                    'date_planned': fields.Datetime.now(),
+                }))
 
-            if not vendor:
-                raise UserError("No vendor found.")
+        # 👇 THIS must be AFTER loop
+        if not po_lines:
+            raise UserError("All products are in stock.")
 
-            po = self.env['purchase.order'].create({
-                'partner_id': vendor.id,
-                'origin': order.name,
-                'order_line': po_lines,
-            })
+        po = self.env['purchase.order'].create({
+            'partner_id': vendor.id,
+            'origin': order.name,
+            'order_line': po_lines,
+        })
 
-            return {
-                'type': 'ir.actions.act_window',
-                'name': 'Purchase Order',
-                'res_model': 'purchase.order',
-                'view_mode': 'form',
-                'res_id': po.id,
-            }
+    # 👇 RETURN OUTSIDE LOOP
+        return {
+        'type': 'ir.actions.act_window',
+        'name': 'Purchase Order',
+        'res_model': 'purchase.order',
+        'view_mode': 'form',
+        'res_id': po.id,
+    }
