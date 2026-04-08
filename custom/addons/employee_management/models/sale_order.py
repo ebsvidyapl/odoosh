@@ -32,15 +32,9 @@ class SaleOrder(models.Model):
 
                 # ✅ correct condition
                 if qty_available < required_qty:
-
                     supplier = product.seller_ids[:1]
 
-                    # ❌ don't block → just collect warning
-                    if not supplier:
-                        missing_vendors.append(product.name)
-                        continue
-
-                    vendor = supplier.partner_id
+                    vendor = supplier.partner_id if supplier else False
 
                     po_lines.append((0, 0, {
                         'product_id': product.id,
@@ -55,7 +49,7 @@ class SaleOrder(models.Model):
                 raise UserError("No products available to create Purchase Order.")
 
             po = self.env['purchase.order'].create({
-                'partner_id': vendor.id,
+                'partner_id': vendor.id if vendor else False,
                 'origin': order.name,
                 'order_line': po_lines,
             })
