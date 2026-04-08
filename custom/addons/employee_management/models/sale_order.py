@@ -12,8 +12,16 @@ class SaleOrder(models.Model):
         for order in self:
 
             po_lines = []
-            vendor = False
-            missing_vendors = []
+
+            # ✅ Get default vendor (create one manually if not exists)
+            default_vendor = self.env['res.partner'].search(
+                [('name', '=', 'Unknown Vendor')], limit=1
+            )
+
+            if not default_vendor:
+                raise UserError("Please create a vendor named 'Unknown Vendor'")
+
+            vendor = default_vendor  # fallback
 
             for line in order.order_line:
                 product = line.product_id
@@ -30,46 +38,34 @@ class SaleOrder(models.Model):
                     warehouse=order.warehouse_id.id
                 ).free_qty
 
-                # ✅ correct condition
+                # ✅ only check shortage
                 if qty_available < required_qty:
+
                     supplier = product.seller_ids[:1]
 
-                    vendor = supplier.partner_id if supplier else False
+                    # ✅ if vendor exists → use it
+                    if supplier:
+                        vendor = supplier.partner_id
 
+                    # ✅ ALWAYS add line (even if no vendor)
                     po_lines.append((0, 0, {
                         'product_id': product.id,
                         'name': product.name,
                         'product_qty': required_qty - qty_available,
-                        'price_unit': supplier.price or product.standard_price,
+                        'price_unit': supplier.price if supplier else product.standard_price,
                         'date_planned': fields.Datetime.now(),
                     }))
 
-            # ❌ nothing to create
+            # ❌ if still empty → real stock available
             if not po_lines:
-                raise UserError("No products available to create Purchase Order.")
+                raise UserError("All products are in stock.")
 
             po = self.env['purchase.order'].create({
-                'partner_id': vendor.id if vendor else False,
+                'partner_id': vendor.id,
                 'origin': order.name,
                 'order_line': po_lines,
             })
 
-            # ✅ show warning if vendor missing
-            if missing_vendors:
-                message = "No vendor defined for:\n" + "\n".join(missing_vendors)
-
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': 'Warning',
-                        'message': message,
-                        'type': 'warning',
-                        'sticky': True,
-                    }
-                }
-
-            # ✅ normal flow
             return {
                 'type': 'ir.actions.act_window',
                 'name': 'Purchase Order',
