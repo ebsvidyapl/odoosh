@@ -1,11 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
- <data>
-    <report
-        id="action_customs_report"
-        model="stock.landed.cost"
-        string="Customs Exemption Report"
-        report_type="qweb-pdf"
-        name="customs_management.report_customs"
-    />
-     </data>
+    <data>
+
+        <report
+            id="action_customs_report"
+            model="stock.landed.cost"
+            string="Customs Exemption Report"
+            report_type="qweb-pdf"
+            name="customs_management.report_customs"
+        />
+
+    </data>
 </odoo>
