@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
+
 
         <report
             id="action_customs_report"
@@ -10,5 +10,5 @@
             name="customs_management.report_customs"
         />
 
-    </data>
+
 </odoo>
