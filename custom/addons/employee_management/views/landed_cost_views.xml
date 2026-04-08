@@ -1,16 +1,16 @@
 <odoo>
 
-    <!-- Inherit Landed Cost Form -->
     <record id="view_landed_cost_form_customs" model="ir.ui.view">
         <field name="name">stock.landed.cost.form.customs</field>
         <field name="model">stock.landed.cost</field>
         <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
         <field name="arch" type="xml">
 
-            <!-- Add a smart info section -->
             <xpath expr="//sheet/group" position="inside">
                 <group string="Customs Info">
-                    <label string="Customs exemption will be auto-applied based on HS Code and Country"/>
+                    <div class="o_form_label">
+                        Customs exemption will be auto-applied based on HS Code and Country
+                    </div>
                 </group>
             </xpath>
 
