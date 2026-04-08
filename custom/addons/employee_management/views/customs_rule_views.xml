@@ -1,5 +1,5 @@
 <odoo>
- <data>
+
     <record id="view_customs_rule_form" model="ir.ui.view">
         <field name="name">customs.rule.form</field>
         <field name="model">customs.exemption.rule</field>
@@ -31,5 +31,4 @@
         </list>
     </field>
 </record>
- </data>
 </odoo>
