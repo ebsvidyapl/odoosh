@@ -1,0 +1,9 @@
+<odoo>
+    <report
+        id="action_customs_report"
+        model="stock.landed.cost"
+        string="Customs Exemption Report"
+        report_type="qweb-pdf"
+        name="customs_management.report_customs"
+    />
+</odoo>

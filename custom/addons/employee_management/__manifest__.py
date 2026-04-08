@@ -19,6 +19,10 @@
         'views/employee_views.xml',
         'views/sale_order_views.xml',      
         'views/purchase_order_views.xml',
+         'views/product_views.xml',
+        'views/customs_rule_views.xml',
+        'views/landed_cost_views.xml',
+        'views/report_views.xml',
 
     ],
     'installable': True,
