@@ -1,4 +1,5 @@
 <odoo>
+ <data>
     <report
         id="action_customs_report"
         model="stock.landed.cost"
@@ -6,4 +7,5 @@
         report_type="qweb-pdf"
         name="customs_management.report_customs"
     />
+     </data>
 </odoo>
