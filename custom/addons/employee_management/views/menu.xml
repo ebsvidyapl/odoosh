@@ -20,8 +20,10 @@
                   name="Exemption Rules"
                   parent="menu_customs_root"
                   action="action_customs_rule"
-                  groups="stock.group_stock_manager"
                   sequence="10"/>
+                  <menuitem id="test_menu_root"
+          name="TEST MENU"
+          sequence="1"/>
 
     </data>
 </odoo>
