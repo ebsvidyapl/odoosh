@@ -45,6 +45,7 @@ class Employee(models.Model):
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
         res['employee_code'] = self.env['ir.sequence'].next_by_code('employee.management') or 'New'
+        return res   # ✅ VERY IMPORTANT
     def unlink(self):
         if not self.env.user.has_group('employee_management.group_management'):
             raise AccessError("Only Management can delete any records.")
