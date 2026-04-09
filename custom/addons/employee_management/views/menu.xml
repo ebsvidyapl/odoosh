@@ -1,9 +1,9 @@
 <odoo>
     <data>
 
-       <menuitem id="menu_customs_root_v2"
+<menuitem id="menu_customs_root_v2"
           name="Customs"
-          parent="stock.menu_stock_root"
+          parent="stock.menu_stock_config_settings"
           sequence="45"/>
 
 <record id="action_customs_rule_v2" model="ir.actions.act_window">
@@ -17,10 +17,6 @@
           parent="menu_customs_root_v2"
           action="action_customs_rule_v2"
           sequence="10"/>
-
-<menuitem id="test_menu_root_v2"
-          name="TEST MENU"
-          sequence="1"/>
 
     </data>
 </odoo>
