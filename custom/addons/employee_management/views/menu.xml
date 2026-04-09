@@ -10,11 +10,11 @@
         </record>
 
         <!-- MENU under Inventory -->
-        <menuitem id="menu_customs_rules"
-                  name="Customs Rules"
-                  parent="stock.menu_stock_root"
-                  action="action_customs_rule"
-                  sequence="99"/>
+  <menuitem id="menu_customs_rules"
+          name="Customs Rules"
+          parent="stock.menu_stock_inventory_control" 
+          action="action_customs_rule"
+          sequence="50"/>
 
     </data>
 </odoo>
