@@ -1,6 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+
+        <!-- ROOT MENU -->
+        <menuitem id="menu_customs_root"
+                  name="Customs"
+                  parent="stock.menu_stock_configuration"
+                  sequence="45"
+                  groups="stock.group_stock_manager"/>
 
         <!-- ACTION -->
         <record id="action_customs_rule" model="ir.actions.act_window">
@@ -9,13 +15,13 @@
             <field name="view_mode">list,form</field>
         </record>
 
-        <!-- MENU under Inventory -->
- <menuitem id="menu_customs_rules"
-          name="Customs Rules"
-          parent="stock.menu_stock_config_settings"
-          action="action_customs_rule"
-          groups="stock.group_stock_manager"
-          sequence="50"/>
+        <!-- CHILD MENU -->
+        <menuitem id="menu_customs_rules"
+                  name="Exemption Rules"
+                  parent="menu_customs_root"
+                  action="action_customs_rule"
+                  groups="stock.group_stock_manager"
+                  sequence="10"/>
 
     </data>
 </odoo>
