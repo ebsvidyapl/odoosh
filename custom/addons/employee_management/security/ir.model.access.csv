@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee_user,employee.user,model_employee_management,base.group_user,1,1,1,1
 access_activity_all,activity_all,mail.model_mail_activity,,1,1,1,1
 access_employee_management,employee.management,model_employee_management,group_management,1,1,1,1
 access_employee_sales,employee.sales,model_employee_management,group_sales_officer,1,1,1,0

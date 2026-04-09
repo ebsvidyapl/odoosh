@@ -135,29 +135,31 @@
 </record>
 
 <!-- ACTION (must come AFTER views) -->
- <!-- ACTION -->
-    <record id="employee_action" model="ir.actions.act_window">
-        <field name="name">Employees</field>
-        <field name="res_model">employee.management</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="views" eval="[
-            (ref('employee_kanban_view'), 'kanban'),
-            (ref('employee_list'), 'list'),
-            (ref('employee_form'), 'form')
-        ]"/>
-        <field name="search_view_id" ref="employee_search_view"/>
-    </record>
+<record id="employee_action" model="ir.actions.act_window">
+    <field name="name">Employees</field>
+    <field name="res_model">employee.management</field>
 
-    <!-- ROOT MENU (FIXED) -->
-    <menuitem id="employee_root"
-              name="Employee Management"
-              action="employee_action"
-              sequence="10"/>
+    <!-- Correct view order -->
+    <field name="view_mode">kanban,list,form</field>
 
-    <!-- CHILD MENU -->
-    <menuitem id="employee_menu"
-              name="Employees"
-              parent="employee_root"
-              action="employee_action"
-              sequence="1"/>
+    <!-- Explicitly connect views -->
+    <field name="views" eval="[
+        (ref('employee_kanban_view'), 'kanban'),
+        (ref('employee_list'), 'list'),
+        (ref('employee_form'), 'form')
+    ]"/>
+
+    <field name="search_view_id" ref="employee_search_view"/>
+</record>
+
+<!-- MENU -->
+<menuitem id="employee_root"
+          name="Employee Management"
+          sequence="10"/>
+
+<menuitem id="employee_menu"
+          name="Employees"
+          parent="employee_root"
+          action="employee_action"
+          sequence="1"/>
 </odoo>
