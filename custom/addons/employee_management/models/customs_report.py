@@ -2,44 +2,52 @@ from odoo import models
 
 
 class CustomsReport(models.AbstractModel):
-    _name = 'report.customs_management.report_customs'
-    _description = 'Customs Report'
+    _name = 'report.employee_management.report_customs'
+    _description = 'Customs Exemption Report'
 
     def _get_report_values(self, docids, data=None):
 
         docs = self.env['stock.landed.cost'].browse(docids)
 
-        report_lines = []
+        lines = []
 
         for cost in docs:
             for line in cost.valuation_adjustment_lines:
 
-                move = line.move_id
-                if not move:
+                # ✅ Get correct product
+                if line.move_id:
+                    product = line.move_id.product_id
+                else:
+                    product = line.product_id
+
+                if not product:
                     continue
 
-                product = move.product_id
                 tmpl = product.product_tmpl_id
 
-                hs_code = tmpl.hs_code
-                country = tmpl.country_of_origin_id.name
+                hs_code = tmpl.hs_code or ''
+                country = tmpl.country_of_origin_id.name or ''
 
-                original_cost = line.former_cost
-                new_cost = line.additional_landed_cost
+                original_cost = line.former_cost or 0.0
+                landed_cost = line.additional_landed_cost or 0.0
 
-                exemption_amount = original_cost - new_cost
+                exemption = original_cost - landed_cost
 
-                report_lines.append({
+                # ✅ Optional: skip zero rows
+                # if exemption == 0:
+                #     continue
+
+                lines.append({
                     'cost_name': cost.name,
                     'product': product.name,
                     'hs_code': hs_code,
                     'country': country,
                     'original_cost': original_cost,
-                    'new_cost': new_cost,
-                    'exemption': exemption_amount,
+                    'landed_cost': landed_cost,
+                    'exemption': exemption,
                 })
 
         return {
             'docs': docs,
-            'lines': report_lines,
+            'lines': lines,
         }
