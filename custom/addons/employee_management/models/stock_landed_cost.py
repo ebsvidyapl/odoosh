@@ -4,43 +4,31 @@ from odoo import models
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
-    def _get_valuation_lines(self):
+    def _compute_landed_cost(self):
         """
-        Override to apply customs exemption BEFORE landed cost computation
+        Override final computation step to apply exemption
         """
+        res = super()._compute_landed_cost()
 
-        lines = super()._get_valuation_lines()
+        for cost in self:
+            for line in cost.valuation_adjustment_lines:
+                product = line.product_id
 
-        for line in lines:
-            product_id = line.get('product_id')
-            if not product_id:
-                continue
+                hs_code = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
+                country_id = product.country_of_origin_id.id
 
-            # Get product
-            product = self.env['product.product'].browse(product_id)
+                rule = self.env['customs.exemption.rule'].search([
+                    ('hs_code', '=', hs_code),
+                    ('country_id', '=', country_id),
+                    ('active', '=', True)
+                ], limit=1)
 
-            # Get HS Code from TEMPLATE (important!)
-            hs_code = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
+                if rule:
+                    if rule.exemption_type == 'full':
+                        line.additional_landed_cost = 0.0
 
-            # Get country
-            country_id = product.country_of_origin_id.id
+                    elif rule.exemption_type == 'partial':
+                        reduction = line.additional_landed_cost * (rule.exemption_percentage / 100.0)
+                        line.additional_landed_cost -= reduction
 
-            # Search matching exemption rule
-            rule = self.env['customs.exemption.rule'].search([
-                ('hs_code', '=', hs_code),
-                ('country_id', '=', country_id),
-                ('active', '=', True)
-            ], limit=1)
-
-            # Apply exemption if rule found
-            if rule:
-                additional_cost = line.get('additional_landed_cost', 0.0)
-
-                if rule.exemption_type == 'full':
-                    line['additional_landed_cost'] = 0.0
-
-                elif rule.exemption_type == 'partial':
-                    reduction = additional_cost * (rule.exemption_percentage / 100.0)
-                    line['additional_landed_cost'] = additional_cost - reduction
-
-        return lines
+        return res
