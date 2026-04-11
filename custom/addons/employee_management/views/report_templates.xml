@@ -1,37 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+
     <template id="report_customs">
         <t t-call="web.external_layout">
-            <div class="page">
-                <h2>Customs Exemption Report</h2>
 
-                <table class="table table-sm table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Landed Cost</th>
-                            <th>Product</th>
-                            <th>HS Code</th>
-                            <th>Country</th>
-                            <th>Original Cost</th>
-                            <th>New Cost</th>
-                            <th>Exemption</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="lines" t-as="l">
+            <main>  <!-- ✅ THIS FIXES YOUR ERROR -->
+
+                <div class="page">
+                    <h2>Customs Exemption Report</h2>
+
+                    <table class="table table-sm table-bordered">
+                        <thead>
                             <tr>
-                                <td><t t-esc="l['cost_name']"/></td>
-                                <td><t t-esc="l['product']"/></td>
-                                <td><t t-esc="l['hs_code']"/></td>
-                                <td><t t-esc="l['country']"/></td>
-                                <td><t t-esc="l['original_cost']"/></td>
-                                <td><t t-esc="l['new_cost']"/></td>
-                                <td><t t-esc="l['exemption']"/></td>
+                                <th>Landed Cost</th>
+                                <th>Product</th>
+                                <th>HS Code</th>
+                                <th>Country</th>
+                                <th>Original Cost</th>
+                                <th>Landed Cost</th>
+                                <th>Exemption</th>
                             </tr>
-                        </t>
-                    </tbody>
-                </table>
+                        </thead>
 
-            </div>
+                        <tbody>
+                            <t t-foreach="lines" t-as="l">
+                                <tr>
+                                    <td><t t-esc="l['cost_name']"/></td>
+                                    <td><t t-esc="l['product']"/></td>
+                                    <td><t t-esc="l['hs_code']"/></td>
+                                    <td><t t-esc="l['country']"/></td>
+                                    <td><t t-esc="l['original_cost']"/></td>
+                                    <td><t t-esc="l['landed_cost']"/></td>
+                                    <td><t t-esc="l['exemption']"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </main>  <!-- ✅ REQUIRED -->
+
         </t>
     </template>
+
 </odoo>
