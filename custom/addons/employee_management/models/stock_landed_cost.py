@@ -25,7 +25,15 @@ class StockLandedCost(models.Model):
                 continue
 
             product_obj = self.env['product.product'].browse(product)
-            rule = self._get_customs_exemption(product_obj)
+
+            hs_code = (product_obj.product_tmpl_id.hs_code or '').replace('.', '').strip()
+            country = product_obj.country_of_origin_id.id
+
+            rule = self.env['customs.exemption.rule'].search([
+    ('hs_code', '=', hs_code),
+    ('country_id', '=', country),
+    ('active', '=', True)
+], limit=1)
 
             if rule:
                 additional_cost = line.get('additional_landed_cost', 0)
