@@ -5,12 +5,16 @@ class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
     def _get_customs_exemption(self, product):
-        rule = self.env['customs.exemption.rule'].search([
-            ('hs_code', '=', product.hs_code),
-            ('country_id', '=', product.country_of_origin_id.id),
-            ('active', '=', True)
-        ], limit=1)
-        return rule
+
+     product_hs = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
+
+     rule = self.env['customs.exemption.rule'].search([
+        ('hs_code', '=', product_hs),
+        ('country_id', '=', product.country_of_origin_id.id),
+        ('active', '=', True)
+    ], limit=1)
+
+     return rule
 
     def _get_valuation_lines(self):
         lines = super()._get_valuation_lines()
@@ -33,4 +37,4 @@ class StockLandedCost(models.Model):
                     reduction = additional_cost * rule.exemption_percentage / 100
                     line['additional_landed_cost'] = additional_cost - reduction
 
-        return lines
+        return linest
