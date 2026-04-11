@@ -1,0 +1,33 @@
+<odoo>
+    <record id="view_customs_rule_form" model="ir.ui.view">
+        <field name="name">customs.rule.form</field>
+        <field name="model">customs.exemption.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="hs_code"/>
+                        <field name="country_id"/>
+                        <field name="exemption_type"/>
+                        <field name="exemption_percentage"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<record id="view_customs_rule_list" model="ir.ui.view">
+    <field name="name">customs.rule.list</field>
+    <field name="model">customs.exemption.rule</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="name"/>
+            <field name="hs_code"/>
+            <field name="country_id"/>
+            <field name="exemption_type"/>
+        </list>
+    </field>
+</record>
+</odoo>

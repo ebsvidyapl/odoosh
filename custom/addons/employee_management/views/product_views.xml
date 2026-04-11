@@ -1,0 +1,15 @@
+<odoo>
+    <record id="view_product_form_customs" model="ir.ui.view">
+        <field name="name">product.form.customs</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <group string="Customs Info">
+                    <field name="hs_code"/>
+                    <field name="country_of_origin_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

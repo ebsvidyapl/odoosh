@@ -5,4 +5,3 @@ access_employee_management,employee.management,model_employee_management,group_m
 access_employee_sales,employee.sales,model_employee_management,group_sales_officer,1,1,1,0
 access_employee_logistics,employee.logistics,model_employee_management,group_logistics,1,1,1,0
 access_employee_accountant,employee.accountant,model_employee_management,group_accountant,1,1,1,0
-access_customs_rule_user,customs.rule.user,model_customs_exemption_rule,base.group_user,1,1,1,1
