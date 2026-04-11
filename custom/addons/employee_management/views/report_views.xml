@@ -1,13 +1,14 @@
 <odoo>
+    <data>
 
-    <report
-        id="action_customs_report"
-        model="stock.landed.cost"
-        string="Customs Exemption Report"
-        report_type="qweb-pdf"
-        name="customs_management.report_customs"
-        file="customs_management.report_customs"
-        print_report_name="'Customs Report - %s' % (object.name)"
-    />
+        <record
+            id="your_report_id"
+            model="your.model"
+            string="Report Name"
+            report_type="qweb-pdf"
+            name="module.report_template"
+            file="module.report_template"
+        />
 
+    </data>
 </odoo>
