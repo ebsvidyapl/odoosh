@@ -1,15 +1,21 @@
 from odoo import models
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
-    def button_validate(self):
+    def _compute_landed_cost(self):
         """
-        Apply exemption just before final validation
+        Apply customs exemption AFTER Odoo computes landed cost
         """
 
-        # Apply exemption BEFORE validation
+        # Step 1: let Odoo compute normally
+        res = super()._compute_landed_cost()
+
+        # Step 2: apply your logic
         for cost in self:
             for line in cost.valuation_adjustment_lines:
 
@@ -18,22 +24,37 @@ class StockLandedCost(models.Model):
                 if not product:
                     continue
 
-                hs_code = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
-                country_id = product.country_of_origin_id.id
+                # ✅ CORRECT SOURCE
+                tmpl = product.product_tmpl_id
+
+                hs_code = (tmpl.hs_code or '').strip().upper()
+                country = tmpl.country_of_origin_id
+
+                if not hs_code or not country:
+                    continue
+
+                # ✅ DEBUG LOG
+                _logger.info(f"Checking HS: {hs_code}, Country: {country.name}")
 
                 rule = self.env['customs.exemption.rule'].search([
                     ('hs_code', '=', hs_code),
-                    ('country_id', '=', country_id),
+                    ('country_id', '=', country.id),
                     ('active', '=', True)
                 ], limit=1)
 
-                if rule:
-                    if rule.exemption_type == 'full':
-                        line.additional_landed_cost = 0.0
+                if not rule:
+                    _logger.info("No rule found")
+                    continue
 
-                    elif rule.exemption_type == 'partial':
-                        reduction = line.additional_landed_cost * (rule.exemption_percentage / 100.0)
-                        line.additional_landed_cost -= reduction
+                _logger.info(f"Rule found: {rule.name}")
 
-        # Then validate normally
-        return super().button_validate()
+                # ✅ APPLY EXEMPTION
+                if rule.exemption_type == 'full':
+                    line.additional_landed_cost = 0.0
+
+                elif rule.exemption_type == 'partial':
+                    line.additional_landed_cost *= (
+                        1 - (rule.exemption_percentage / 100.0)
+                    )
+
+        return res
