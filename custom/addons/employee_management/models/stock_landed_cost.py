@@ -7,21 +7,25 @@ _logger = logging.getLogger(__name__)
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
-    def _compute_landed_cost(self):
-        res = super()._compute_landed_cost()
+    def button_compute(self):
+        """
+        Override compute button to apply customs exemption AFTER Odoo computation
+        """
 
+        # Step 1: Let Odoo compute normally
+        res = super().button_compute()
+
+        # Step 2: Apply your exemption logic
         for cost in self:
             for line in cost.valuation_adjustment_lines:
 
-                # ✅ VERY IMPORTANT FIX
                 move = line.move_id
 
                 if not move:
-                    _logger.info("No move_id found")
+                    _logger.info("❌ No move found")
                     continue
 
-                product = move.product_id  # ✅ REAL PRODUCT
-
+                product = move.product_id
                 tmpl = product.product_tmpl_id
 
                 hs_code = (tmpl.hs_code or '').strip().upper()
@@ -40,10 +44,10 @@ class StockLandedCost(models.Model):
                 ], limit=1)
 
                 if not rule:
-                    _logger.info("❌ No matching rule")
+                    _logger.info("❌ No rule found")
                     continue
 
-                _logger.info(f"✅ Rule Found: {rule.name}")
+                _logger.info(f"✅ Rule applied: {rule.name}")
 
                 # ✅ APPLY EXEMPTION
                 if rule.exemption_type == 'full':
