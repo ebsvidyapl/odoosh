@@ -24,6 +24,7 @@
         'views/landed_cost_views.xml',
         'views/report_views.xml',
         'views/menu.xml',
+        'views/report_templates.xml',
 
     ],
     'installable': True,
