@@ -16,7 +16,8 @@
                                 <th>Product</th>
                                 <th>HS Code</th>
                                 <th>Country</th>
-                                <th>Freight/Duty Cost</th>
+                                <th>Original Cost</th>
+                                <th>Final Cost</th>
                                 <th>Exemption</th>
                             </tr>
                         </thead>
@@ -29,7 +30,8 @@
                                         <td><t t-esc="l['product']"/></td>
                                         <td><t t-esc="l['hs_code']"/></td>
                                         <td><t t-esc="l['country']"/></td>
-                                        <td><t t-esc="l['landed_cost']"/></td>
+                                        <td><t t-esc="l['original_cost']"/></td>
+                                        <td><t t-esc="l['final_cost']"/></td>
                                         <td><t t-esc="l['exemption']"/></td>
                                     </tr>
                                 </t>
@@ -37,7 +39,7 @@
 
                             <t t-if="not lines">
                                 <tr>
-                                    <td colspan="6" style="text-align:center;">
+                                    <td colspan="7" style="text-align:center;">
                                         No Data Available
                                     </td>
                                 </tr>
