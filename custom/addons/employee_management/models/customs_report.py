@@ -14,7 +14,7 @@ class CustomsReport(models.AbstractModel):
         for cost in docs:
             for line in cost.valuation_adjustment_lines:
 
-                # ✅ Get correct product
+                # ✅ Get actual product
                 if line.move_id:
                     product = line.move_id.product_id
                 else:
@@ -25,24 +25,37 @@ class CustomsReport(models.AbstractModel):
 
                 tmpl = product.product_tmpl_id
 
-                hs_code = tmpl.hs_code or ''
-                country = tmpl.country_of_origin_id.name or ''
+                hs_code = (tmpl.hs_code or '').strip().upper()
+                country = tmpl.country_of_origin_id
 
-                original_cost = line.former_cost or 0.0
                 landed_cost = line.additional_landed_cost or 0.0
 
-                exemption = original_cost - landed_cost
+                # ✅ Find rule
+                rule = self.env['customs.exemption.rule'].search([
+                    ('hs_code', '=', hs_code),
+                    ('country_id', '=', country.id),
+                    ('active', '=', True)
+                ], limit=1)
 
-                # ✅ Optional: skip zero rows
-                # if exemption == 0:
-                #     continue
+                # ✅ APPLY EXEMPTION ONLY ON LANDED COST
+                if rule:
+                    if rule.exemption_type == 'full':
+                        exemption = landed_cost
+
+                    elif rule.exemption_type == 'partial':
+                        exemption = landed_cost * (rule.exemption_percentage / 100.0)
+                else:
+                    exemption = 0.0
+
+                # ✅ ROUND VALUES
+                landed_cost = round(landed_cost, 2)
+                exemption = round(exemption, 2)
 
                 lines.append({
                     'cost_name': cost.name,
                     'product': product.name,
                     'hs_code': hs_code,
-                    'country': country,
-                    'original_cost': original_cost,
+                    'country': country.name if country else '',
                     'landed_cost': landed_cost,
                     'exemption': exemption,
                 })

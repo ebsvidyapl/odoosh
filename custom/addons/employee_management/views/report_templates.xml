@@ -1,58 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<odoo>
+<table class="table table-sm table-bordered">
+    <thead>
+        <tr>
+            <th>Landed Cost</th>
+            <th>Product</th>
+            <th>HS Code</th>
+            <th>Country</th>
+            <th>Freight/Duty Cost</th>
+            <th>Exemption</th>
+        </tr>
+    </thead>
 
-    <template id="report_customs">
-        <t t-call="web.external_layout">
-
-            <main>
-                <div class="page">
-
-                    <h2>Customs Exemption Report</h2>
-
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Landed Cost</th>
-                                <th>Product</th>
-                                <th>HS Code</th>
-                                <th>Country</th>
-                                <th>Original Cost</th>
-                                <th>Landed Cost</th>
-                                <th>Exemption</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <t t-if="lines">
-                                <t t-foreach="lines" t-as="l">
-                                    <tr>
-                                        <td><t t-esc="l['cost_name']"/></td>
-                                        <td><t t-esc="l['product']"/></td>
-                                        <td><t t-esc="l['hs_code']"/></td>
-                                        <td><t t-esc="l['country']"/></td>
-                                        <td><t t-esc="l['original_cost']"/></td>
-                                        <td><t t-esc="l['landed_cost']"/></td>
-                                        <td><t t-esc="l['exemption']"/></td>
-                                    </tr>
-                                </t>
-                            </t>
-
-                            <!-- ✅ If no data -->
-                            <t t-if="not lines">
-                                <tr>
-                                    <td colspan="7" style="text-align:center;">
-                                        No Data Available
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-
-                    </table>
-
-                </div>
-            </main>
-
+    <tbody>
+        <t t-foreach="lines" t-as="l">
+            <tr>
+                <td><t t-esc="l['cost_name']"/></td>
+                <td><t t-esc="l['product']"/></td>
+                <td><t t-esc="l['hs_code']"/></td>
+                <td><t t-esc="l['country']"/></td>
+                <td><t t-esc="l['landed_cost']"/></td>
+                <td><t t-esc="l['exemption']"/></td>
+            </tr>
         </t>
-    </template>
-
-</odoo>
+    </tbody>
+</table>
