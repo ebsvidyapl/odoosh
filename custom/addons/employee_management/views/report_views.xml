@@ -5,8 +5,8 @@
         <field name="name">Customs Exemption Report</field>
         <field name="model">stock.landed.cost</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">customs_management.report_customs</field>
-        <field name="report_file">customs_management.report_customs</field>
+        <field name="report_name">employee_management.report_customs</field>
+        <field name="report_file">employee_management.report_customs</field>
         <field name="print_report_name">'Customs Report - %s' % (object.name)</field>
     </record>
 
