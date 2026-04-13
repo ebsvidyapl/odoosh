@@ -1,7 +1,4 @@
 from odoo import models
-import logging
-
-_logger = logging.getLogger(__name__)
 
 
 class StockLandedCost(models.Model):
@@ -9,51 +6,67 @@ class StockLandedCost(models.Model):
 
     def button_validate(self):
         """
-        Apply customs exemption at FINAL stage (this WILL work)
+        Apply exemption ONLY on freight before validation
         """
 
-        # Step 1: Let Odoo finish everything
-        res = super().button_validate()
-
-        # Step 2: Apply exemption AFTER validation
         for cost in self:
             for line in cost.valuation_adjustment_lines:
 
-                move = line.move_id
-                if not move:
+                product = line.product_id
+                if not product:
                     continue
 
-                product = move.product_id
-                tmpl = product.product_tmpl_id
+                # ✅ CLEAN HS CODE
+                hs_code = (product.product_tmpl_id.hs_code or '')
+                hs_code = hs_code.replace('.', '').replace(' ', '').strip()
 
-                hs_code = (tmpl.hs_code or '').strip().upper()
-                country = tmpl.country_of_origin_id
+                # ✅ COUNTRY
+                country = product.country_of_origin_id
 
-                _logger.info(f"[CUSTOMS] Product: {product.name}")
-                _logger.info(f"[CUSTOMS] HS: {hs_code}, Country: {country.name}")
+                # 🔍 DEBUG (REMOVE AFTER TEST)
+                print("------ DEBUG START ------")
+                print("PRODUCT:", product.name)
+                print("HS CODE:", hs_code)
+                print("COUNTRY:", country.name if country else "None")
 
-                if not hs_code or not country:
-                    continue
-
-                rule = self.env['customs.exemption.rule'].search([
-                    ('hs_code', '=', hs_code),
-                    ('country_id', '=', country.id),
+                # ✅ GET ALL ACTIVE RULES
+                rules = self.env['customs.exemption.rule'].search([
                     ('active', '=', True)
-                ], limit=1)
+                ])
 
-                if not rule:
-                    _logger.info("[CUSTOMS] ❌ No rule found")
-                    continue
+                matched_rule = False
 
-                _logger.info(f"[CUSTOMS] ✅ Rule Applied: {rule.name}")
+                # ✅ MATCH MANUALLY (ROBUST)
+                for rule in rules:
+                    rule_hs = (rule.hs_code or '')
+                    rule_hs = rule_hs.replace('.', '').replace(' ', '').strip()
 
-                # ✅ APPLY EXEMPTION
-                if rule.exemption_type == 'full':
-                    line.additional_landed_cost = 0.0
+                    if (
+                        rule_hs == hs_code
+                        and rule.country_id.id == country.id
+                    ):
+                        matched_rule = rule
+                        break
 
-                elif rule.exemption_type == 'partial':
-                    line.additional_landed_cost *= (
-                        1 - (rule.exemption_percentage / 100.0)
-                    )
+                print("MATCHED RULE:", matched_rule)
 
-        return res
+                # ✅ APPLY EXEMPTION ONLY ON FREIGHT
+                if matched_rule:
+
+                    if matched_rule.exemption_type == 'full':
+                        print("FULL EXEMPTION APPLIED")
+                        line.additional_landed_cost = 0.0
+
+                    elif matched_rule.exemption_type == 'partial':
+                        reduction = line.additional_landed_cost * (
+                            matched_rule.exemption_percentage / 100.0
+                        )
+                        print("PARTIAL EXEMPTION:", reduction)
+                        line.additional_landed_cost -= reduction
+
+                else:
+                    print("NO RULE MATCHED")
+
+                print("------ DEBUG END ------")
+
+        return super().button_validate()
