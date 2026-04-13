@@ -7,7 +7,8 @@
 
         <field name="arch" type="xml">
 
-            <xpath expr="//field[@name='valuation_adjustment_lines']/tree/field[@name='additional_landed_cost']" position="after">
+            <!-- ✅ SAFER TARGET -->
+            <xpath expr="//field[@name='valuation_adjustment_lines']/tree" position="inside">
 
                 <field name="purchase_cost"/>
                 <field name="duty_fee"/>
@@ -15,6 +16,7 @@
 
             </xpath>
 
+            <!-- BUTTON -->
             <xpath expr="//header" position="inside">
                 <button name="%(action_customs_report)d"
                         string="Print Customs Report"
