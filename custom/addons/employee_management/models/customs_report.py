@@ -7,93 +7,69 @@ class CustomsReport(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         docs = self.env['stock.landed.cost'].browse(docids)
 
-        eur_currency = self.env.ref('base.EUR')
-        company_currency = self.env.company.currency_id
-
-        report_lines = []
+        lines = []
 
         for doc in docs:
-            for line in doc.valuation_adjustment_lines:
 
-                product = line.product_id
+            for val in doc.valuation_adjustment_lines:
 
-                if not product:
-                    continue
+                product = val.product_id
 
-                # ✅ ORIGINAL PURCHASE COST (DO NOT CONVERT AGAIN)
-                purchase_line = line.move_id.purchase_line_id if line.move_id else False
+                # ✅ Purchase Cost (EUR from PO)
+                cost_price_eur = val.former_cost or 0.0
 
-                if purchase_line:
-                    cost_eur = purchase_line.price_unit  # already EUR
-                    purchase_currency = purchase_line.order_id.currency_id
-                else:
-                    cost_eur = 0.0
-                    purchase_currency = eur_currency
+                # ✅ Freight (AED from landed cost)
+                freight_aed = val.additional_landed_cost or 0.0
 
-                # ✅ Convert purchase → AED only once
-                cost_aed = purchase_currency._convert(
-                    cost_eur,
-                    company_currency,
-                    doc.company_id,
-                    doc.date
-                )
+                # ✅ Currency conversion
+                eur_currency = self.env.ref('base.EUR')
+                aed_currency = self.env.company.currency_id
 
-                # ✅ FREIGHT (comes in AED in landed cost)
-                freight_aed = line.additional_landed_cost
-
-                # Convert AED → EUR
-                freight_eur = company_currency._convert(
+                # Convert freight AED → EUR
+                freight_eur = aed_currency._convert(
                     freight_aed,
                     eur_currency,
-                    doc.company_id,
+                    self.env.company,
                     doc.date
                 )
 
-                # ✅ EXEMPTION (ONLY on freight)
-                exemption = 0.0
-
-                hs_code = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
-                country_id = product.country_of_origin_id.id
-
-                rule = self.env['customs.exemption.rule'].search([
-                    ('hs_code', '=', hs_code),
-                    ('country_id', '=', country_id),
-                    ('active', '=', True)
-                ], limit=1)
-
-                if rule:
-                    if rule.exemption_type == 'full':
-                        exemption = freight_aed
-                    elif rule.exemption_type == 'partial':
-                        exemption = freight_aed * (rule.exemption_percentage / 100.0)
-
-                # Convert exemption to EUR
-                exemption_eur = company_currency._convert(
-                    exemption,
-                    eur_currency,
-                    doc.company_id,
+                # Convert cost EUR → AED
+                cost_price_aed = eur_currency._convert(
+                    cost_price_eur,
+                    aed_currency,
+                    self.env.company,
                     doc.date
                 )
 
-                # ✅ TOTAL
-                total_aed = cost_aed + (freight_aed - exemption)
-                total_eur = cost_eur + (freight_eur - exemption_eur)
+                # ✅ Exemption (ONLY on freight)
+                exemption_percent = getattr(product, 'exemption_percent', 0.0)
 
-                report_lines.append({
+                exemption_aed = freight_aed * (exemption_percent / 100)
+                exemption_eur = freight_eur * (exemption_percent / 100)
+
+                # ✅ Totals
+                total_eur = cost_price_eur + freight_eur - exemption_eur
+                total_aed = cost_price_aed + freight_aed - exemption_aed
+
+                lines.append({
                     'product': product.name,
-                    'hs_code': product.product_tmpl_id.hs_code,
-                    'country': product.country_of_origin_id.name,
-                    'cost_eur': cost_eur,
-                    'cost_aed': cost_aed,
+                    'hs_code': product.hs_code or '',
+                    'country': product.country_of_origin or '',
+
+                    'cost_price_eur': cost_price_eur,
+                    'cost_price_aed': cost_price_aed,
+
                     'freight_eur': freight_eur,
                     'freight_aed': freight_aed,
-                    'exemption_aed': exemption,
+
                     'exemption_eur': exemption_eur,
+                    'exemption_aed': exemption_aed,
+
                     'total_eur': total_eur,
                     'total_aed': total_aed,
                 })
 
         return {
             'docs': docs,
-            'lines': report_lines,
+            'lines': lines,
         }
