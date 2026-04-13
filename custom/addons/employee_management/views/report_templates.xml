@@ -36,7 +36,7 @@
                                     <td><t t-esc="l['hs_code']"/></td>
                                     <td><t t-esc="l['country']"/></td>
 
-                                  <td><t t-esc="l['cost_price_eur']"/></td>
+<td><t t-esc="l['cost_price_eur']"/></td>
 <td><t t-esc="l['cost_price_aed']"/></td>
 <td><t t-esc="l['freight_eur']"/></td>
 <td><t t-esc="l['freight_aed']"/></td>
