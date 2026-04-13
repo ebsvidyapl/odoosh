@@ -16,6 +16,7 @@
                                 <th>Product</th>
                                 <th>HS Code</th>
                                 <th>Country</th>
+                                <th>Cost Price</th>
                                 <th>Original Cost</th>
                                 <th>Final Cost</th>
                                 <th>Exemption</th>
@@ -30,6 +31,7 @@
                                         <td><t t-esc="l['product']"/></td>
                                         <td><t t-esc="l['hs_code']"/></td>
                                         <td><t t-esc="l['country']"/></td>
+                                        <td><t t-esc="l['cost_price']"/></td>
                                         <td><t t-esc="l['original_cost']"/></td>
                                         <td><t t-esc="l['final_cost']"/></td>
                                         <td><t t-esc="l['exemption']"/></td>

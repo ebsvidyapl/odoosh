@@ -27,7 +27,7 @@ class CustomsReport(models.AbstractModel):
 
                 hs_code = (tmpl.hs_code or '').strip()
                 country = tmpl.country_of_origin_id
-
+                cost_price = product.standard_price or 0.0
                 # ✅ ORIGINAL COST (before exemption)
                 original_cost = line.cost_line_id.price_unit or 0.0
 
@@ -47,6 +47,7 @@ class CustomsReport(models.AbstractModel):
                     'product': product.name,
                     'hs_code': hs_code,
                     'country': country.name if country else '',
+                    'cost_price': round(cost_price, 2),
                     'original_cost': original_cost,
                     'final_cost': final_cost,
                     'exemption': exemption,
