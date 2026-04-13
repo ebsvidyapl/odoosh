@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import models, fields
 
 
 class CustomsReport(models.AbstractModel):
@@ -11,53 +11,71 @@ class CustomsReport(models.AbstractModel):
 
         lines = []
 
+        company = self.env.company
+        company_currency = company.currency_id
+
+        # ✅ Get EUR currency
+        eur_currency = self.env['res.currency'].search([('name', '=', 'EUR')], limit=1)
+
         for cost in docs:
             for line in cost.valuation_adjustment_lines:
 
-                # ✅ Get product
+                # ✅ Product
                 product = line.move_id.product_id if line.move_id else line.product_id
                 if not product:
                     continue
 
                 tmpl = product.product_tmpl_id
 
-                # ✅ BASIC INFO
+                # ✅ Basic Info
                 hs_code = (tmpl.hs_code or '').strip()
                 country = tmpl.country_of_origin_id
 
-                # ✅ COST PRICE
-                cost_price = product.standard_price or 0.0
+                # ✅ COST (AED)
+                cost_price_aed = line.former_cost or 0.0
 
-                # ✅ LANDED COST (ORIGINAL)
-                original_cost = line.cost_line_id.price_unit or 0.0
+                # ✅ FREIGHT (AED)
+                freight_aed = line.cost_line_id.price_unit or 0.0
 
-                # ✅ FINAL LANDED COST (AFTER EXEMPTION)
-                final_cost = line.additional_landed_cost or 0.0
+                # ✅ FINAL COST AFTER EXEMPTION (AED)
+                final_aed = line.additional_landed_cost or 0.0
 
                 # ✅ EXEMPTION
-                exemption = original_cost - final_cost
+                exemption = freight_aed - final_aed
 
-                # ✅ TOTAL COST (IMPORTANT)
-                total_cost = cost_price + final_cost
+                # ✅ TOTAL
+                total_aed = cost_price_aed + final_aed
+
+                # ✅ DATE FOR CONVERSION
+                date = fields.Date.today()
+
+                # ✅ CONVERT AED → EUR
+                cost_price_eur = company_currency._convert(cost_price_aed, eur_currency, company, date)
+                freight_eur = company_currency._convert(freight_aed, eur_currency, company, date)
+                final_eur = company_currency._convert(final_aed, eur_currency, company, date)
+                total_eur = company_currency._convert(total_aed, eur_currency, company, date)
 
                 # ✅ ROUND
-                cost_price = round(cost_price, 2)
-                original_cost = round(original_cost, 2)
-                final_cost = round(final_cost, 2)
-                exemption = round(exemption, 2)
-                total_cost = round(total_cost, 2)
-
                 lines.append({
                     'cost_name': cost.name,
                     'product': product.name,
                     'hs_code': hs_code,
                     'country': country.name if country else '',
 
-                    'cost_price': cost_price,
-                    'original_cost': original_cost,
-                    'final_cost': final_cost,
-                    'exemption': exemption,
-                    'total_cost': total_cost,
+                    # AED
+                    'cost_price_aed': round(cost_price_aed, 2),
+                    'freight_aed': round(freight_aed, 2),
+                    'final_aed': round(final_aed, 2),
+                    'total_aed': round(total_aed, 2),
+
+                    # EUR
+                    'cost_price_eur': round(cost_price_eur, 2),
+                    'freight_eur': round(freight_eur, 2),
+                    'final_eur': round(final_eur, 2),
+                    'total_eur': round(total_eur, 2),
+
+                    # Exemption
+                    'exemption': round(exemption, 2),
                 })
 
         return {
