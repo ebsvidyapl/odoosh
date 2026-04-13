@@ -1,56 +1,59 @@
 from odoo import models
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
-    def compute_landed_cost(self):
+    def button_validate(self):
         """
-        Apply exemption BEFORE computation (CORRECT WAY)
+        Apply customs exemption at FINAL stage (this WILL work)
         """
 
+        # Step 1: Let Odoo finish everything
+        res = super().button_validate()
+
+        # Step 2: Apply exemption AFTER validation
         for cost in self:
-            for cost_line in cost.cost_lines:
+            for line in cost.valuation_adjustment_lines:
 
-                product = cost_line.product_id
-                if not product:
+                move = line.move_id
+                if not move:
                     continue
 
-                # ✅ CLEAN HS CODE
-                hs_code = (product.product_tmpl_id.hs_code or '')
-                hs_code = hs_code.replace('.', '').replace(' ', '').strip()
+                product = move.product_id
+                tmpl = product.product_tmpl_id
 
-                country = product.country_of_origin_id
+                hs_code = (tmpl.hs_code or '').strip().upper()
+                country = tmpl.country_of_origin_id
 
-                # ✅ FIND RULE
-                rules = self.env['customs.exemption.rule'].search([
+                _logger.info(f"[CUSTOMS] Product: {product.name}")
+                _logger.info(f"[CUSTOMS] HS: {hs_code}, Country: {country.name}")
+
+                if not hs_code or not country:
+                    continue
+
+                rule = self.env['customs.exemption.rule'].search([
+                    ('hs_code', '=', hs_code),
+                    ('country_id', '=', country.id),
                     ('active', '=', True)
-                ])
+                ], limit=1)
 
-                matched_rule = False
+                if not rule:
+                    _logger.info("[CUSTOMS] ❌ No rule found")
+                    continue
 
-                for rule in rules:
-                    rule_hs = (rule.hs_code or '')
-                    rule_hs = rule_hs.replace('.', '').replace(' ', '').strip()
+                _logger.info(f"[CUSTOMS] ✅ Rule Applied: {rule.name}")
 
-                    if (
-                        rule_hs == hs_code
-                        and rule.country_id.id == country.id
-                    ):
-                        matched_rule = rule
-                        break
+                # ✅ APPLY EXEMPTION
+                if rule.exemption_type == 'full':
+                    line.additional_landed_cost = 0.0
 
-                # ✅ APPLY ON COST LINE (NOT adjustment line)
-                if matched_rule:
+                elif rule.exemption_type == 'partial':
+                    line.additional_landed_cost *= (
+                        1 - (rule.exemption_percentage / 100.0)
+                    )
 
-                    if matched_rule.exemption_type == 'full':
-                        cost_line.price_unit = 0.0
-
-                    elif matched_rule.exemption_type == 'partial':
-                        reduction = cost_line.price_unit * (
-                            matched_rule.exemption_percentage / 100.0
-                        )
-                        cost_line.price_unit -= reduction
-
-        # ✅ NOW let Odoo compute correctly
-        return super().compute_landed_cost()
+        return res
