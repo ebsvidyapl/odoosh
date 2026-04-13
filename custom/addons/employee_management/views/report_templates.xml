@@ -17,33 +17,26 @@
                                 <th>HS Code</th>
                                 <th>Country</th>
                                 <th>Cost Price</th>
-                                <th>Original Cost</th>
-                                <th>Final Cost</th>
+                                <th>Freight/Duty</th>
                                 <th>Exemption</th>
+                                <th>Final Landed</th>
+                                <th>Total Cost</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <t t-if="lines">
-                                <t t-foreach="lines" t-as="l">
-                                    <tr>
-                                        <td><t t-esc="l['cost_name']"/></td>
-                                        <td><t t-esc="l['product']"/></td>
-                                        <td><t t-esc="l['hs_code']"/></td>
-                                        <td><t t-esc="l['country']"/></td>
-                                        <td><t t-esc="l['cost_price']"/></td>
-                                        <td><t t-esc="l['original_cost']"/></td>
-                                        <td><t t-esc="l['final_cost']"/></td>
-                                        <td><t t-esc="l['exemption']"/></td>
-                                    </tr>
-                                </t>
-                            </t>
-
-                            <t t-if="not lines">
+                            <t t-foreach="lines" t-as="l">
                                 <tr>
-                                    <td colspan="7" style="text-align:center;">
-                                        No Data Available
-                                    </td>
+                                    <td><t t-esc="l['cost_name']"/></td>
+                                    <td><t t-esc="l['product']"/></td>
+                                    <td><t t-esc="l['hs_code']"/></td>
+                                    <td><t t-esc="l['country']"/></td>
+
+                                    <td><t t-esc="l['cost_price']"/></td>
+                                    <td><t t-esc="l['original_cost']"/></td>
+                                    <td><t t-esc="l['exemption']"/></td>
+                                    <td><t t-esc="l['final_cost']"/></td>
+                                    <td><t t-esc="l['total_cost']"/></td>
                                 </tr>
                             </t>
                         </tbody>
