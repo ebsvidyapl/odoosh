@@ -7,16 +7,14 @@
 
         <field name="arch" type="xml">
 
-            <!-- ✅ SAFER TARGET -->
-            <xpath expr="//field[@name='valuation_adjustment_lines']/tree" position="inside">
+            <!-- ✅ SAFEST WAY: add fields AFTER the one2many -->
+            <xpath expr="//field[@name='valuation_adjustment_lines']" position="after">
 
-                <field name="purchase_cost"/>
-                <field name="duty_fee"/>
-                <field name="exemption_applied"/>
+                <field name="valuation_adjustment_lines" invisible="1"/>
 
             </xpath>
 
-            <!-- BUTTON -->
+            <!-- ✅ ADD BUTTON ONLY -->
             <xpath expr="//header" position="inside">
                 <button name="%(action_customs_report)d"
                         string="Print Customs Report"

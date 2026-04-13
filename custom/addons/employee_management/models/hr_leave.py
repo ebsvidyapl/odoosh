@@ -4,37 +4,35 @@ class HrLeave(models.Model):
     _inherit = 'hr.leave'
 
     @api.model
-    def create(self, vals):
+    def create(self, vals_list):
+        records = super().create(vals_list)
 
-        # Apply only for Sales Officer
-        if self.env.user.has_group('employee_management.group_sales_officer'):
+        # Loop for multi-create safety
+        for record in records:
 
-            management_group = self.env.ref(
-                'employee_management.group_management',
-                raise_if_not_found=False
-            )
+            # Apply only if Sales Officer creates leave
+            if self.env.user.has_group('employee_management.group_sales_officer'):
 
-            if management_group:
-                management_user = self.env['res.users'].search([
-                    ('groups_id', 'in', management_group.id),
-                    ('share', '=', False)
-                ], limit=1)
+                management_group = self.env.ref(
+                    'employee_management.group_management',
+                    raise_if_not_found=False
+                )
 
-                if management_user:
-                    # ✅ CORRECT FIELD (Odoo 19)
-                    vals['leave_manager_id'] = management_user.id
+                if management_group:
+                    # Get all management users
+                    users = self.env['res.users'].search([
+                        ('groups_id', 'in', management_group.id),
+                        ('share', '=', False)
+                    ])
 
-        record = super().create(vals)
+                    for user in users:
+                        self.env['mail.activity'].create({
+                            'res_model_id': self.env['ir.model']._get_id('hr.leave'),
+                            'res_id': record.id,
+                            'user_id': user.id,
+                            'summary': 'Time Off Request',
+                            'note': f'{self.env.user.name} requested time off.',
+                            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                        })
 
-        # 🔔 Create activity for manager
-        if record.leave_manager_id:
-            self.env['mail.activity'].create({
-                'res_model_id': self.env['ir.model']._get_id('hr.leave'),
-                'res_id': record.id,
-                'user_id': record.leave_manager_id.id,
-                'summary': 'Time Off Request',
-                'note': f'{self.env.user.name} requested time off.',
-                'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
-            })
-
-        return record
+        return records
