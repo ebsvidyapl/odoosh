@@ -14,8 +14,9 @@ class HrLeave(models.Model):
 
             # Get users safely (Odoo 19 compatible)
             users = self.env['res.users'].search([
-                ('groups_id', 'in', management_group.id)
-            ])
+    ('groups_id', 'in', management_group.id),
+    ('share', '=', False)  # only internal users
+])
 
             for user in users:
                 self.env['mail.activity'].create({

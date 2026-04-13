@@ -1,8 +1,6 @@
 <odoo>
-
     <template id="report_customs">
         <t t-call="web.external_layout">
-
             <main>
                 <div class="page">
 
@@ -18,7 +16,7 @@
                                 <th>Original Duty</th>
                                 <th>Applied Duty</th>
                                 <th>Exemption</th>
-                                <th>Type</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
 
@@ -29,20 +27,22 @@
                                     <td><t t-esc="l['product']"/></td>
                                     <td><t t-esc="l['hs_code']"/></td>
                                     <td><t t-esc="l['country']"/></td>
+
                                     <td><t t-esc="l['original_duty']"/></td>
                                     <td><t t-esc="l['applied_duty']"/></td>
+                                    <td><t t-esc="l['exemption']"/></td>
 
-                                    <!-- ✅ FIXED LOGIC -->
                                     <td>
                                         <t t-if="l['type'] == 'full'">
-                                            0
+                                            Duty Free
+                                        </t>
+                                        <t t-elif="l['type'] == 'partial'">
+                                            Partial
                                         </t>
                                         <t t-else="">
-                                            <t t-esc="l['exemption']"/>
+                                            Normal
                                         </t>
                                     </td>
-
-                                    <td><t t-esc="l['type']"/></td>
                                 </tr>
                             </t>
                         </tbody>
@@ -51,8 +51,6 @@
 
                 </div>
             </main>
-
         </t>
     </template>
-
 </odoo>

@@ -13,16 +13,10 @@ class CustomsReport(models.AbstractModel):
 
         for cost in docs:
 
-            # ✅ MAIN SOURCE (after validation)
-            data_lines = cost.valuation_adjustment_lines
-
-            # ✅ FALLBACK (before validation)
-            if not data_lines:
-                data_lines = cost.cost_lines
+            data_lines = cost.valuation_adjustment_lines or cost.cost_lines
 
             for line in data_lines:
 
-                # SAFE PRODUCT FETCH
                 product = False
 
                 if hasattr(line, 'product_id') and line.product_id:
@@ -47,8 +41,6 @@ class CustomsReport(models.AbstractModel):
                 })
 
         return {
-            'doc_ids': docids,
-            'doc_model': 'stock.landed.cost',
             'docs': docs,
             'lines': lines,
         }

@@ -6,3 +6,4 @@ access_employee_sales,employee.sales,model_employee_management,group_sales_offic
 access_employee_logistics,employee.logistics,model_employee_management,group_logistics,1,1,1,0
 access_employee_accountant,employee.accountant,model_employee_management,group_accountant,1,1,1,0
 access_customs_rule_user,customs.rule.user,model_customs_exemption_rule,base.group_user,1,1,1,1
+access_hr_leave_management,hr.leave.management,hr_holidays.model_hr_leave,employee_management.group_management,1,1,1,1
