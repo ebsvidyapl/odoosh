@@ -4,8 +4,8 @@
         <field name="name">Customs Report</field>
         <field name="model">stock.landed.cost</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">customs_management.report_customs</field>
-        <field name="report_file">customs_management.report_customs</field>
+        <field name="report_name">employee_management.report_customs</field>
+        <field name="report_file">employee_management.report_customs</field>
         <field name="binding_model_id" ref="stock_landed_costs.model_stock_landed_cost"/>
         <field name="binding_type">report</field>
     </record>
