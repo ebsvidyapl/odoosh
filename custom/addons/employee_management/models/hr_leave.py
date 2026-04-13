@@ -5,15 +5,19 @@ class HrLeave(models.Model):
 
     @api.model
     def create(self, vals):
-        record = super(HrLeave, self).create(vals)
+        record = super().create(vals)
 
-        # Check if created by Sales Officer
-        sales_group = self.env.ref('employee_management.group_sales_officer')
-        management_group = self.env.ref('employee_management.group_management')
+        # Check if current user is Sales Officer
+        if self.env.user.has_group('employee_management.group_sales_officer'):
 
-        if self.env.user in sales_group.users:
-            # Create activity for all management users
-            for user in management_group.users:
+            management_group = self.env.ref('employee_management.group_management')
+
+            # Get users safely (Odoo 19 compatible)
+            users = self.env['res.users'].search([
+                ('groups_id', 'in', management_group.id)
+            ])
+
+            for user in users:
                 self.env['mail.activity'].create({
                     'res_model_id': self.env['ir.model']._get_id('hr.leave'),
                     'res_id': record.id,
