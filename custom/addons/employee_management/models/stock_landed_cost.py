@@ -4,15 +4,15 @@ from odoo import models
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
-    def button_validate(self):
+    def compute_landed_cost(self):
         """
-        Apply exemption ONLY on freight before validation
+        Apply exemption BEFORE computation (CORRECT WAY)
         """
 
         for cost in self:
-            for line in cost.valuation_adjustment_lines:
+            for cost_line in cost.cost_lines:
 
-                product = line.product_id
+                product = cost_line.product_id
                 if not product:
                     continue
 
@@ -20,23 +20,15 @@ class StockLandedCost(models.Model):
                 hs_code = (product.product_tmpl_id.hs_code or '')
                 hs_code = hs_code.replace('.', '').replace(' ', '').strip()
 
-                # ✅ COUNTRY
                 country = product.country_of_origin_id
 
-                # 🔍 DEBUG (REMOVE AFTER TEST)
-                print("------ DEBUG START ------")
-                print("PRODUCT:", product.name)
-                print("HS CODE:", hs_code)
-                print("COUNTRY:", country.name if country else "None")
-
-                # ✅ GET ALL ACTIVE RULES
+                # ✅ FIND RULE
                 rules = self.env['customs.exemption.rule'].search([
                     ('active', '=', True)
                 ])
 
                 matched_rule = False
 
-                # ✅ MATCH MANUALLY (ROBUST)
                 for rule in rules:
                     rule_hs = (rule.hs_code or '')
                     rule_hs = rule_hs.replace('.', '').replace(' ', '').strip()
@@ -48,25 +40,17 @@ class StockLandedCost(models.Model):
                         matched_rule = rule
                         break
 
-                print("MATCHED RULE:", matched_rule)
-
-                # ✅ APPLY EXEMPTION ONLY ON FREIGHT
+                # ✅ APPLY ON COST LINE (NOT adjustment line)
                 if matched_rule:
 
                     if matched_rule.exemption_type == 'full':
-                        print("FULL EXEMPTION APPLIED")
-                        line.additional_landed_cost = 0.0
+                        cost_line.price_unit = 0.0
 
                     elif matched_rule.exemption_type == 'partial':
-                        reduction = line.additional_landed_cost * (
+                        reduction = cost_line.price_unit * (
                             matched_rule.exemption_percentage / 100.0
                         )
-                        print("PARTIAL EXEMPTION:", reduction)
-                        line.additional_landed_cost -= reduction
+                        cost_line.price_unit -= reduction
 
-                else:
-                    print("NO RULE MATCHED")
-
-                print("------ DEBUG END ------")
-
-        return super().button_validate()
+        # ✅ NOW let Odoo compute correctly
+        return super().compute_landed_cost()
