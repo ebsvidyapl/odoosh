@@ -1,22 +1,22 @@
 <odoo>
     <template id="report_customs">
         <t t-call="web.external_layout">
+
             <main>
                 <div class="page">
 
-                    <h2>Customs Exemption Report</h2>
+                    <h2>Customs Report</h2>
 
-                    <table class="table table-sm table-bordered">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Landed Cost</th>
                                 <th>Product</th>
                                 <th>HS Code</th>
                                 <th>Country</th>
-                                <th>Original Duty</th>
-                                <th>Applied Duty</th>
+                                <th>Purchase Cost</th>
+                                <th>Duty Fee</th>
                                 <th>Exemption</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
 
@@ -27,22 +27,9 @@
                                     <td><t t-esc="l['product']"/></td>
                                     <td><t t-esc="l['hs_code']"/></td>
                                     <td><t t-esc="l['country']"/></td>
-
-                                    <td><t t-esc="l['original_duty']"/></td>
-                                    <td><t t-esc="l['applied_duty']"/></td>
+                                    <td><t t-esc="l['purchase_cost']"/></td>
+                                    <td><t t-esc="l['duty_fee']"/></td>
                                     <td><t t-esc="l['exemption']"/></td>
-
-                                    <td>
-                                        <t t-if="l['type'] == 'full'">
-                                            Duty Free
-                                        </t>
-                                        <t t-elif="l['type'] == 'partial'">
-                                            Partial
-                                        </t>
-                                        <t t-else="">
-                                            Normal
-                                        </t>
-                                    </td>
                                 </tr>
                             </t>
                         </tbody>
@@ -51,6 +38,7 @@
 
                 </div>
             </main>
+
         </t>
     </template>
 </odoo>

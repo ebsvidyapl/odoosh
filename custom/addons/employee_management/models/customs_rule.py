@@ -13,11 +13,8 @@ class CustomsExemptionRule(models.Model):
     exemption_type = fields.Selection([
         ('full', 'Full Exemption'),
         ('partial', 'Partial Exemption')
-    ], default='full', required=True)
+    ], required=True)
 
-    exemption_percentage = fields.Float(
-        string="Exemption %",
-        help="Only used for partial exemption"
-    )
+    exemption_percentage = fields.Float(string="Exemption %")
 
     active = fields.Boolean(default=True)

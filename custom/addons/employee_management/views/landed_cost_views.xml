@@ -6,14 +6,22 @@
         <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
 
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
 
+            <xpath expr="//field[@name='valuation_adjustment_lines']/tree/field[@name='additional_landed_cost']" position="after">
+
+                <field name="purchase_cost"/>
+                <field name="duty_fee"/>
+                <field name="exemption_applied"/>
+
+            </xpath>
+
+            <xpath expr="//header" position="inside">
                 <button name="%(action_customs_report)d"
                         string="Print Customs Report"
                         type="action"
                         class="btn-primary"/>
-
             </xpath>
+
         </field>
     </record>
 
