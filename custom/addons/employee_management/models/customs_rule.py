@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields
 
 
 class CustomsExemptionRule(models.Model):
@@ -13,20 +13,11 @@ class CustomsExemptionRule(models.Model):
     exemption_type = fields.Selection([
         ('full', 'Full Exemption'),
         ('partial', 'Partial Exemption')
-    ], default='full')
+    ], default='full', required=True)
 
-    exemption_percentage = fields.Float(string="Exemption %")
+    exemption_percentage = fields.Float(
+        string="Exemption %",
+        help="Only used for partial exemption"
+    )
 
     active = fields.Boolean(default=True)
-
-    # ✅ AUTO UPPERCASE FIX
-    @api.model
-    def create(self, vals):
-        if vals.get('hs_code'):
-            vals['hs_code'] = vals['hs_code'].upper().strip()
-        return super().create(vals)
-
-    def write(self, vals):
-        if vals.get('hs_code'):
-            vals['hs_code'] = vals['hs_code'].upper().strip()
-        return super().write(vals)

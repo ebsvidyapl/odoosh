@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
     <template id="report_customs">
         <t t-call="web.external_layout">
-
             <main>
                 <div class="page">
 
@@ -16,34 +13,35 @@
                                 <th>Product</th>
                                 <th>HS Code</th>
                                 <th>Country</th>
-                                <th>Cost Price</th>
-                                <th>Original Cost</th>
-                                <th>Final Cost</th>
+                                <th>Original Duty</th>
+                                <th>Applied Duty</th>
                                 <th>Exemption</th>
+                                <th>Type</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <t t-if="lines">
-                                <t t-foreach="lines" t-as="l">
-                                    <tr>
-                                        <td><t t-esc="l['cost_name']"/></td>
-                                        <td><t t-esc="l['product']"/></td>
-                                        <td><t t-esc="l['hs_code']"/></td>
-                                        <td><t t-esc="l['country']"/></td>
-                                        <td><t t-esc="l['cost_price']"/></td>
-                                        <td><t t-esc="l['original_cost']"/></td>
-                                        <td><t t-esc="l['final_cost']"/></td>
-                                        <td><t t-esc="l['exemption']"/></td>
-                                    </tr>
-                                </t>
-                            </t>
-
-                            <t t-if="not lines">
+                            <t t-foreach="lines" t-as="l">
                                 <tr>
-                                    <td colspan="7" style="text-align:center;">
-                                        No Data Available
+                                    <td><t t-esc="l['cost_name']"/></td>
+                                    <td><t t-esc="l['product']"/></td>
+                                    <td><t t-esc="l['hs_code']"/></td>
+                                    <td><t t-esc="l['country']"/></td>
+
+                                    <td><t t-esc="l['original_duty']"/></td>
+                                    <td><t t-esc="l['applied_duty']"/></td>
+
+                                    <!-- ✅ KEY FIX -->
+                                    <td>
+                                        <t t-if="l['type'] == 'full'">
+                                            0
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="l['exemption']"/>
+                                        </t>
                                     </td>
+
+                                    <td><t t-esc="l['type']"/></td>
                                 </tr>
                             </t>
                         </tbody>
@@ -52,8 +50,6 @@
 
                 </div>
             </main>
-
         </t>
     </template>
-
 </odoo>

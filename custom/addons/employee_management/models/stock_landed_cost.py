@@ -1,21 +1,26 @@
-from odoo import models
-import logging
+from odoo import models, fields
 
-_logger = logging.getLogger(__name__)
+
+class StockValuationAdjustmentLines(models.Model):
+    _inherit = 'stock.valuation.adjustment.lines'
+
+    original_duty = fields.Float(string="Original Duty")
+    applied_duty = fields.Float(string="Applied Duty")
+    exemption_amount = fields.Float(string="Exemption Amount")
+    exemption_type = fields.Selection([
+        ('none', 'No Exemption'),
+        ('full', 'Full Exemption'),
+        ('partial', 'Partial Exemption')
+    ], default='none')
 
 
 class StockLandedCost(models.Model):
     _inherit = 'stock.landed.cost'
 
     def button_validate(self):
-        """
-        Apply customs exemption at FINAL stage (this WILL work)
-        """
 
-        # Step 1: Let Odoo finish everything
         res = super().button_validate()
 
-        # Step 2: Apply exemption AFTER validation
         for cost in self:
             for line in cost.valuation_adjustment_lines:
 
@@ -29,31 +34,46 @@ class StockLandedCost(models.Model):
                 hs_code = (tmpl.hs_code or '').strip().upper()
                 country = tmpl.country_of_origin_id
 
-                _logger.info(f"[CUSTOMS] Product: {product.name}")
-                _logger.info(f"[CUSTOMS] HS: {hs_code}, Country: {country.name}")
-
                 if not hs_code or not country:
                     continue
 
+                # Find rule
                 rule = self.env['customs.exemption.rule'].search([
                     ('hs_code', '=', hs_code),
                     ('country_id', '=', country.id),
                     ('active', '=', True)
                 ], limit=1)
 
+                # Store original duty BEFORE change
+                original = line.additional_landed_cost or 0.0
+                line.original_duty = original
+
                 if not rule:
-                    _logger.info("[CUSTOMS] ❌ No rule found")
+                    line.applied_duty = original
+                    line.exemption_amount = 0.0
+                    line.exemption_type = 'none'
                     continue
 
-                _logger.info(f"[CUSTOMS] ✅ Rule Applied: {rule.name}")
-
-                # ✅ APPLY EXEMPTION
+                # ✅ FULL EXEMPTION
                 if rule.exemption_type == 'full':
-                    line.additional_landed_cost = 0.0
 
+                    line.additional_landed_cost = 0.0
+                    line.applied_duty = 0.0
+
+                    # IMPORTANT: Business meaning → no exemption value
+                    line.exemption_amount = 0.0
+                    line.exemption_type = 'full'
+
+                # ✅ PARTIAL EXEMPTION
                 elif rule.exemption_type == 'partial':
-                    line.additional_landed_cost *= (
-                        1 - (rule.exemption_percentage / 100.0)
-                    )
+
+                    reduction = original * (rule.exemption_percentage / 100.0)
+                    final = original - reduction
+
+                    line.additional_landed_cost = final
+                    line.applied_duty = final
+
+                    line.exemption_amount = reduction
+                    line.exemption_type = 'partial'
 
         return res
