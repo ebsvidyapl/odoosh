@@ -1,34 +1,31 @@
-from odoo import models
+def _get_report_values(self, docids, data=None):
 
+    print("DOCIDS:", docids)
 
-class CustomsReport(models.AbstractModel):
-    _name = 'report.customs_management.report_customs'
-    _description = 'Customs Exemption Report'
+    docs = self.env['stock.landed.cost'].browse(docids)
 
-    def _get_report_values(self, docids, data=None):
+    print("DOCS:", docs)
 
-        docs = self.env['stock.landed.cost'].browse(docids)
+    lines = []
 
-        lines = []
+    for cost in docs:
+        print("COST:", cost.name)
 
-        for cost in docs:
-            for line in cost.valuation_adjustment_lines:
+        for line in cost.valuation_adjustment_lines:
+            print("LINE FOUND")
 
-                product = line.product_id or line.move_id.product_id
-                tmpl = product.product_tmpl_id
+            product = line.product_id or line.move_id.product_id
 
-                lines.append({
-                    'cost_name': cost.name,
-                    'product': product.name,
-                    'hs_code': tmpl.hs_code or '',
-                    'country': tmpl.country_of_origin_id.name or '',
-                    'original_duty': round(line.original_duty, 2),
-                    'applied_duty': round(line.applied_duty, 2),
-                    'exemption': round(line.exemption_amount, 2),
-                    'type': line.exemption_type,
-                })
+            if not product:
+                continue
 
-        return {
-            'docs': docs,
-            'lines': lines,
-        }
+            lines.append({
+                'product': product.name,
+            })
+
+    print("LINES:", lines)
+
+    return {
+        'docs': docs,
+        'lines': lines,
+    }
