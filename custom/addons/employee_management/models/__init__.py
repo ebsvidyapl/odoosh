@@ -6,3 +6,4 @@ from . import customs_rule
 from . import purchase
 from . import stock_landed_cost
 from . import customs_report   
+from . import hr_leave

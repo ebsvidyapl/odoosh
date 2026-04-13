@@ -1,6 +1,8 @@
 <odoo>
+
     <template id="report_customs">
         <t t-call="web.external_layout">
+
             <main>
                 <div class="page">
 
@@ -27,11 +29,10 @@
                                     <td><t t-esc="l['product']"/></td>
                                     <td><t t-esc="l['hs_code']"/></td>
                                     <td><t t-esc="l['country']"/></td>
-
                                     <td><t t-esc="l['original_duty']"/></td>
                                     <td><t t-esc="l['applied_duty']"/></td>
 
-                                    <!-- ✅ KEY FIX -->
+                                    <!-- ✅ FIXED LOGIC -->
                                     <td>
                                         <t t-if="l['type'] == 'full'">
                                             0
@@ -50,6 +51,8 @@
 
                 </div>
             </main>
+
         </t>
     </template>
+
 </odoo>

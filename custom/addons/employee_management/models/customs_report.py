@@ -1,31 +1,54 @@
-def _get_report_values(self, docids, data=None):
+from odoo import models
 
-    print("DOCIDS:", docids)
 
-    docs = self.env['stock.landed.cost'].browse(docids)
+class CustomsReport(models.AbstractModel):
+    _name = 'report.employee_management.report_customs'
+    _description = 'Customs Exemption Report'
 
-    print("DOCS:", docs)
+    def _get_report_values(self, docids, data=None):
 
-    lines = []
+        docs = self.env['stock.landed.cost'].browse(docids)
 
-    for cost in docs:
-        print("COST:", cost.name)
+        lines = []
 
-        for line in cost.valuation_adjustment_lines:
-            print("LINE FOUND")
+        for cost in docs:
 
-            product = line.product_id or line.move_id.product_id
+            # ✅ MAIN SOURCE (after validation)
+            data_lines = cost.valuation_adjustment_lines
 
-            if not product:
-                continue
+            # ✅ FALLBACK (before validation)
+            if not data_lines:
+                data_lines = cost.cost_lines
 
-            lines.append({
-                'product': product.name,
-            })
+            for line in data_lines:
 
-    print("LINES:", lines)
+                # SAFE PRODUCT FETCH
+                product = False
 
-    return {
-        'docs': docs,
-        'lines': lines,
-    }
+                if hasattr(line, 'product_id') and line.product_id:
+                    product = line.product_id
+                elif hasattr(line, 'move_id') and line.move_id:
+                    product = line.move_id.product_id
+
+                if not product:
+                    continue
+
+                tmpl = product.product_tmpl_id
+
+                lines.append({
+                    'cost_name': cost.name,
+                    'product': product.name,
+                    'hs_code': tmpl.hs_code or '',
+                    'country': tmpl.country_of_origin_id.name if tmpl.country_of_origin_id else '',
+                    'original_duty': getattr(line, 'original_duty', 0.0),
+                    'applied_duty': getattr(line, 'applied_duty', 0.0),
+                    'exemption': getattr(line, 'exemption_amount', 0.0),
+                    'type': getattr(line, 'exemption_type', 'none'),
+                })
+
+        return {
+            'doc_ids': docids,
+            'doc_model': 'stock.landed.cost',
+            'docs': docs,
+            'lines': lines,
+        }
