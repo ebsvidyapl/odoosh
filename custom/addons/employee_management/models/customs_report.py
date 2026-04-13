@@ -1,84 +1,99 @@
-from odoo import models, fields
-
+from odoo import models
 
 class CustomsReport(models.AbstractModel):
     _name = 'report.employee_management.report_customs'
-    _description = 'Customs Exemption Report'
+    _description = 'Customs Report'
 
     def _get_report_values(self, docids, data=None):
-
         docs = self.env['stock.landed.cost'].browse(docids)
 
-        lines = []
+        eur_currency = self.env.ref('base.EUR')
+        company_currency = self.env.company.currency_id
 
-        company = self.env.company
-        company_currency = company.currency_id
+        report_lines = []
 
-        # ✅ Get EUR currency
-        eur_currency = self.env['res.currency'].search([('name', '=', 'EUR')], limit=1)
+        for doc in docs:
+            for line in doc.valuation_adjustment_lines:
 
-        for cost in docs:
-            for line in cost.valuation_adjustment_lines:
+                product = line.product_id
 
-                # ✅ Product
-                product = line.move_id.product_id if line.move_id else line.product_id
                 if not product:
                     continue
 
-                tmpl = product.product_tmpl_id
+                # ✅ ORIGINAL PURCHASE COST (DO NOT CONVERT AGAIN)
+                purchase_line = line.move_id.purchase_line_id if line.move_id else False
 
-                # ✅ Basic Info
-                hs_code = (tmpl.hs_code or '').strip()
-                country = tmpl.country_of_origin_id
+                if purchase_line:
+                    cost_eur = purchase_line.price_unit  # already EUR
+                    purchase_currency = purchase_line.order_id.currency_id
+                else:
+                    cost_eur = 0.0
+                    purchase_currency = eur_currency
 
-                # ✅ COST (AED)
-                cost_price_aed = line.former_cost or 0.0
+                # ✅ Convert purchase → AED only once
+                cost_aed = purchase_currency._convert(
+                    cost_eur,
+                    company_currency,
+                    doc.company_id,
+                    doc.date
+                )
 
-                # ✅ FREIGHT (AED)
-                freight_aed = line.cost_line_id.price_unit or 0.0
+                # ✅ FREIGHT (comes in AED in landed cost)
+                freight_aed = line.additional_landed_cost
 
-                # ✅ FINAL COST AFTER EXEMPTION (AED)
-                final_aed = line.additional_landed_cost or 0.0
+                # Convert AED → EUR
+                freight_eur = company_currency._convert(
+                    freight_aed,
+                    eur_currency,
+                    doc.company_id,
+                    doc.date
+                )
 
-                # ✅ EXEMPTION
-                exemption = freight_aed - final_aed
+                # ✅ EXEMPTION (ONLY on freight)
+                exemption = 0.0
+
+                hs_code = (product.product_tmpl_id.hs_code or '').replace('.', '').strip()
+                country_id = product.country_of_origin_id.id
+
+                rule = self.env['customs.exemption.rule'].search([
+                    ('hs_code', '=', hs_code),
+                    ('country_id', '=', country_id),
+                    ('active', '=', True)
+                ], limit=1)
+
+                if rule:
+                    if rule.exemption_type == 'full':
+                        exemption = freight_aed
+                    elif rule.exemption_type == 'partial':
+                        exemption = freight_aed * (rule.exemption_percentage / 100.0)
+
+                # Convert exemption to EUR
+                exemption_eur = company_currency._convert(
+                    exemption,
+                    eur_currency,
+                    doc.company_id,
+                    doc.date
+                )
 
                 # ✅ TOTAL
-                total_aed = cost_price_aed + final_aed
+                total_aed = cost_aed + (freight_aed - exemption)
+                total_eur = cost_eur + (freight_eur - exemption_eur)
 
-                # ✅ DATE FOR CONVERSION
-                date = fields.Date.today()
-
-                # ✅ CONVERT AED → EUR
-                cost_price_eur = company_currency._convert(cost_price_aed, eur_currency, company, date)
-                freight_eur = company_currency._convert(freight_aed, eur_currency, company, date)
-                final_eur = company_currency._convert(final_aed, eur_currency, company, date)
-                total_eur = company_currency._convert(total_aed, eur_currency, company, date)
-
-                # ✅ ROUND
-                lines.append({
-                    'cost_name': cost.name,
+                report_lines.append({
                     'product': product.name,
-                    'hs_code': hs_code,
-                    'country': country.name if country else '',
-
-                    # AED
-                    'cost_price_aed': round(cost_price_aed, 2),
-                    'freight_aed': round(freight_aed, 2),
-                    'final_aed': round(final_aed, 2),
-                    'total_aed': round(total_aed, 2),
-
-                    # EUR
-                    'cost_price_eur': round(cost_price_eur, 2),
-                    'freight_eur': round(freight_eur, 2),
-                    'final_eur': round(final_eur, 2),
-                    'total_eur': round(total_eur, 2),
-
-                    # Exemption
-                    'exemption': round(exemption, 2),
+                    'hs_code': product.product_tmpl_id.hs_code,
+                    'country': product.country_of_origin_id.name,
+                    'cost_eur': cost_eur,
+                    'cost_aed': cost_aed,
+                    'freight_eur': freight_eur,
+                    'freight_aed': freight_aed,
+                    'exemption_aed': exemption,
+                    'exemption_eur': exemption_eur,
+                    'total_eur': total_eur,
+                    'total_aed': total_aed,
                 })
 
         return {
             'docs': docs,
-            'lines': lines,
+            'lines': report_lines,
         }
