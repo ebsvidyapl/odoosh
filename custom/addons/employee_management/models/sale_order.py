@@ -13,7 +13,6 @@ class SaleOrder(models.Model):
 
             po_lines = []
 
-            # ✅ Get default vendor (create one manually if not exists)
             default_vendor = self.env['res.partner'].search(
                 [('name', '=', 'Unknown Vendor')], limit=1
             )
@@ -21,7 +20,7 @@ class SaleOrder(models.Model):
             if not default_vendor:
                 raise UserError("Please create a vendor named 'Unknown Vendor'")
 
-            vendor = default_vendor  # fallback
+            vendor = default_vendor
 
             for line in order.order_line:
                 product = line.product_id
@@ -38,16 +37,13 @@ class SaleOrder(models.Model):
                     warehouse=order.warehouse_id.id
                 ).free_qty
 
-                # ✅ only check shortage
                 if qty_available < required_qty:
 
                     supplier = product.seller_ids[:1]
 
-                    # ✅ if vendor exists → use it
                     if supplier:
                         vendor = supplier.partner_id
 
-                    # ✅ ALWAYS add line (even if no vendor)
                     po_lines.append((0, 0, {
                         'product_id': product.id,
                         'name': product.name,
@@ -56,7 +52,6 @@ class SaleOrder(models.Model):
                         'date_planned': fields.Datetime.now(),
                     }))
 
-            # ❌ if still empty → real stock available
             if not po_lines:
                 raise UserError("All products are in stock.")
 
@@ -73,7 +68,9 @@ class SaleOrder(models.Model):
                 'view_mode': 'form',
                 'res_id': po.id,
             }
+
     def action_confirm(self):
+
         for order in self:
 
             # -------------------------------
@@ -88,4 +85,5 @@ class SaleOrder(models.Model):
             if order.x_admin_required and not order.x_admin_approved:
                 raise UserError("Admin approval required for orders above 10,000 AED.")
 
-        return super().action_confirm()
+        # ✅ Call super ONCE (correct)
+        return super(SaleOrder, self).action_confirm()
