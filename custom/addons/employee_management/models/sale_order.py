@@ -73,3 +73,19 @@ class SaleOrder(models.Model):
                 'view_mode': 'form',
                 'res_id': po.id,
             }
+    def action_confirm(self):
+        for order in self:
+
+            # -------------------------------
+            # MARGIN VALIDATION
+            # -------------------------------
+            if order.x_need_margin_approval and not order.x_margin_approved:
+                raise UserError("Margin approval required before confirming.")
+
+            # -------------------------------
+            # ADMIN VALIDATION (>10,000 AED)
+            # -------------------------------
+            if order.x_admin_required and not order.x_admin_approved:
+                raise UserError("Admin approval required for orders above 10,000 AED.")
+
+        return super().action_confirm()
