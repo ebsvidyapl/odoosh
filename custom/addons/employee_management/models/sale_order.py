@@ -76,7 +76,7 @@ class SaleOrder(models.Model):
             # -------------------------------
             # MARGIN VALIDATION
             # -------------------------------
-            if order.x_need_margin_approval and not order.x_margin_approved:
+            if order.x_studio_need_margin_approval and not order.x_studio_margin_approved:
                 raise UserError("Margin approval required before confirming.")
 
             # -------------------------------
