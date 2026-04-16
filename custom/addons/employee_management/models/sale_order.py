@@ -82,7 +82,7 @@ class SaleOrder(models.Model):
             # -------------------------------
             # ADMIN VALIDATION (>10,000 AED)
             # -------------------------------
-            if order.x_admin_required and not order.x_admin_approved:
+            if order.x_studio_admin_approval_required and not order.x_studio_admin_approved:
                 raise UserError("Admin approval required for orders above 10,000 AED.")
 
         # ✅ Call super ONCE (correct)
